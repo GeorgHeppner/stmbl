@@ -3,7 +3,8 @@
 #include "defines.h"
 #include <stdio.h>
 #include <string.h>
-#include "usbd_cdc_if.h"
+//#include "usbd_cdc_if.h"
+#include "uart_cdc.h"
 
 #define TERM_NUM_WAVES 8
 #define TERM_BUF_SIZE 8
@@ -35,12 +36,12 @@ static void nrt_init(volatile void * ctx_ptr, volatile hal_pin_inst_t * pin_ptr)
 static void rt_func(float period, volatile void * ctx_ptr, volatile hal_pin_inst_t * pin_ptr){
    struct term_ctx_t * ctx = (struct term_ctx_t *)ctx_ptr;
    struct term_pin_ctx_t * pins = (struct term_pin_ctx_t *)pin_ptr;
-   
+
    if(ctx->send_counter++ >= PIN(send_step) - 1){
       for(int i = 0; i < TERM_NUM_WAVES; i++){
          ctx->wave_buf[ctx->write_pos][i] = PINA(wave, i);
       }
-      
+
       ctx->write_pos++;
       ctx->write_pos %= TERM_BUF_SIZE;
       ctx->send_counter = 0;
@@ -62,7 +63,7 @@ static void nrt_func(volatile void * ctx_ptr, volatile hal_pin_inst_t * pin_ptr)
 
    while(ctx->read_pos != wp){
       bc++;
-      
+
       for(int i = 0; i < TERM_NUM_WAVES; i++){
          tmp = (int)((ctx->wave_buf[ctx->read_pos][i] + PINA(offset,i)) * PINA(gain,i) + 128);
          buf[i+1] = CLAMP(tmp,1,254);
@@ -83,7 +84,7 @@ static void nrt_func(volatile void * ctx_ptr, volatile hal_pin_inst_t * pin_ptr)
    }else{
       PIN(con) = 0.0;
    }
-   
+
    if (cdc_is_connected()) {
       char rx_buf[64];
       if (cdc_getline(rx_buf,sizeof(rx_buf))){
