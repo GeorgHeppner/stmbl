@@ -33,6 +33,7 @@ SOURCES += stm32f303/src/comps/hvdc.c
 SOURCES += stm32f303/src/comps/io.c
 SOURCES += stm32f303/src/comps/ls.c
 SOURCES += stm32f303/src/comps/enc.c
+SOURCES += stm32f303/src/comps/can.c
 
 SOURCES += shared/comps/sim.c
 SOURCES += shared/comps/term.c
@@ -117,7 +118,7 @@ CPPFLAGS += $(addprefix -I,$(INCDIRS))
 #  -g             generate debugging information
 #  -save-temps    preserve .s and .i-files
 #
-#CPPFLAGS += 
+#CPPFLAGS +=
 # CPPFLAGS += -g
 # CPPFLAGS += -save-temps=obj
 
