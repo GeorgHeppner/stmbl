@@ -9,6 +9,8 @@ HAL_COMP(can);
 
 HAL_PIN(pos);
 HAL_PIN(vel);
+
+//copied from florolf
 /*
 static void init_can(void)
 {
@@ -37,7 +39,9 @@ static void init_can(void)
 }
 */
 /* We have no .data section, so these cannot be initialized */
-/*uint32_t h, l;
+/*
+
+uint32_t h, l;
 uint8_t len;
 uint8_t *p;
 
