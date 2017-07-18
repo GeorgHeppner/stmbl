@@ -38,87 +38,89 @@ static void init_can(void)
 		;
 }
 */
-/* We have no .data section, so these cannot be initialized */
-/*
 
-uint32_t h, l;
-uint8_t len;
-uint8_t *p;
+/* CAN init function */
 
-static void do_tx(void)
+CAN_HandleTypeDef hcan;
+
+/* USER CODE BEGIN PV */
+static CanTxMsgTypeDef myTxMessage;
+static CanRxMsgTypeDef myRxMessage;
+static CAN_FilterConfTypeDef myFilter;
+/* USER CODE END PV */
+
+/* CAN init function */
+static void MX_CAN_Init(void)
 {
-	uint32_t timeout = TX_TIMEOUT;
 
-	CAN_TDT0R(CANx) &= ~CAN_TDTxR_DLC_MASK;
-	CAN_TDT0R(CANx) |= len;
-	CAN_TDH0R(CANx) = h;
-	CAN_TDL0R(CANx) = l;
-	CAN_TI0R(CANx) |= CAN_TIxR_TXRQ;
+  //HAL_CAN_MspInit(&hcan);
 
-	while ((CAN_TI0R(CANx) & CAN_TIxR_TXRQ) && (timeout-- > 0))
-		;
+  GPIO_InitTypeDef GPIO_InitStruct;
+  __HAL_RCC_CAN1_CLK_ENABLE();
+
+  /**CAN GPIO Configuration
+  PA11     ------> CAN_RX
+  PA12     ------> CAN_TX
+  */
+  GPIO_InitStruct.Pin = GPIO_PIN_11|GPIO_PIN_12;
+  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+  GPIO_InitStruct.Alternate = GPIO_AF9_CAN;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  GPIO_InitStruct.Pin = GPIO_PIN_2;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  GPIO_InitStruct.Pin = GPIO_PIN_7;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  hcan.Instance = CAN;
+  hcan.Init.Prescaler = 6;
+  hcan.Init.Mode = CAN_MODE_NORMAL;
+  hcan.Init.SJW = CAN_SJW_1TQ;
+  hcan.Init.BS1 = CAN_BS1_8TQ;
+  hcan.Init.BS2 = CAN_BS2_3TQ;
+  hcan.Init.TTCM = DISABLE;
+  hcan.Init.ABOM = ENABLE;
+  hcan.Init.AWUM = DISABLE;
+  hcan.Init.NART = DISABLE;
+  hcan.Init.RFLM = DISABLE;
+  hcan.Init.TXFP = DISABLE;
+
+  if (HAL_CAN_Init(&hcan) != HAL_OK)
+  {
+    Error_Handler();
+  }
 }
 
-static int do_rx()
-{
-	if (!(CAN_RF0R(CANx) & CAN_RF0R_FMP0_MASK))
-		return 0;
+void testTransmit(char * foo) {
+  printf("otter");
+  hcan.pTxMsg = &myTxMessage;
 
-	len = CAN_RDT0R(CANx) & CAN_RDTxR_DLC_MASK;
-	h = CAN_RDH0R(CANx);
-	l = CAN_RDL0R(CANx);
+  myTxMessage.DLC = 4;
+  myTxMessage.StdId = 0x234;
+  myTxMessage.IDE = CAN_ID_STD;
+  myTxMessage.Data[0] = 0xDE;
+  myTxMessage.Data[1] = 0xAD;
+  myTxMessage.Data[2] = 0xBE;
+  myTxMessage.Data[3] = 0xEF;
 
-	CAN_RF0R(CANx) |= CAN_RF0R_RFOM0;
-	while(CAN_RF0R(CANx) & CAN_RF0R_RFOM0)
-		;
-
-	return 1;
+  HAL_CAN_Transmit_IT(&hcan);
+  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_7);
 }
-*/
+COMMAND("cantx", testTransmit);
+
 static void nrt_init(volatile void * ctx_ptr, volatile hal_pin_inst_t * pin_ptr){
   // struct enc_ctx_t * ctx = (struct enc_ctx_t *)ctx_ptr;
   struct can_pin_ctx_t * pins = (struct can_pin_ctx_t *)pin_ptr;
-
-  /**TIM1 GPIO Configuration
-  PA8     ------> TIM1_CH1
-  PA9     ------> TIM1_CH2
-  */
-  /*GPIO_InitTypeDef GPIO_InitStruct;
-  GPIO_InitStruct.Pin = GPIO_PIN_8|GPIO_PIN_9;
-  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-  GPIO_InitStruct.Pull = GPIO_PULLUP;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  GPIO_InitStruct.Alternate = GPIO_AF6_TIM1;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-  TIM_Encoder_InitTypeDef sConfig;
-  TIM_MasterConfigTypeDef sMasterConfig;
-
-  htim1.Instance = TIM1;
-  htim1.Init.Prescaler = 0;
-  htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim1.Init.Period = 2000;
-  htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-  htim1.Init.RepetitionCounter = 0;
-  // htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
-  sConfig.EncoderMode = TIM_ENCODERMODE_TI12;//TIM_ENCODERMODE_TI1??
-  sConfig.IC1Polarity = TIM_ICPOLARITY_RISING;
-  sConfig.IC1Selection = TIM_ICSELECTION_DIRECTTI;
-  sConfig.IC1Prescaler = TIM_ICPSC_DIV1;
-  sConfig.IC1Filter = 0;
-  sConfig.IC2Polarity = TIM_ICPOLARITY_RISING;
-  sConfig.IC2Selection = TIM_ICSELECTION_DIRECTTI;
-  sConfig.IC2Prescaler = TIM_ICPSC_DIV1;
-  sConfig.IC2Filter = 0;
-  HAL_TIM_Encoder_Init(&htim1, &sConfig);
-
-  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
-  sMasterConfig.MasterOutputTrigger2 = TIM_TRGO2_RESET;
-  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
-  HAL_TIMEx_MasterConfigSynchronization(&htim1, &sMasterConfig);
-
-  HAL_TIM_Encoder_Start(&htim1, TIM_CHANNEL_1 | TIM_CHANNEL_2);*/
-
+  MX_CAN_Init();
 }
 
 static void rt_func(float period, volatile void * ctx_ptr, volatile hal_pin_inst_t * pin_ptr){

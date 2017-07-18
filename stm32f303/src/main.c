@@ -174,6 +174,8 @@ int main(void)
     MX_OPAMP3_Init();
     // MX_USART1_UART_Init();
     //MX_USB_DEVICE_Init();
+
+
     cdc_init();
     HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
     __HAL_RCC_DMA1_CLK_ENABLE();
@@ -249,6 +251,7 @@ int main(void)
     hal_init(1.0 / 15000.0, 0.0);
     // hal load comps
     load_comp(comp_by_name("term"));
+    load_comp(comp_by_name("can"));
     load_comp(comp_by_name("sim"));
     load_comp(comp_by_name("io"));
     load_comp(comp_by_name("vel"));
@@ -271,6 +274,9 @@ int main(void)
     hal_parse("vel1.rt_prio = 0.021");
     hal_parse("ypid0.rt_prio = 0.03");
     hal_parse("term0.rt_prio = 0.1");
+
+    hal_parse("can0.rt_prio = 0.2");
+
     hal_parse("io0.rt_prio = 1.0");
     // hal_parse("curpid0.rt_prio = 3.0");
     // hal_parse("dc0.rt_prio = 4.0");
@@ -278,6 +284,7 @@ int main(void)
     // hal_parse("hv0.rt_prio = 6.0");
     hal_parse("hvdc0.rt_prio = 6.0");
     hal_parse("sim0.rt_prio = 7.0");
+
 
     hal_parse("term0.send_step = 100.0");
     hal_parse("term0.gain0 = 20.0");
@@ -389,7 +396,7 @@ void SystemClock_Config(void)
     Error_Handler();
   }
 
-  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USB|RCC_PERIPHCLK_USART1
+  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_USART1
                               |RCC_PERIPHCLK_USART3|RCC_PERIPHCLK_TIM8
                               |RCC_PERIPHCLK_ADC12|RCC_PERIPHCLK_ADC34|RCC_PERIPHCLK_RTC;
   PeriphClkInit.Usart1ClockSelection = RCC_USART1CLKSOURCE_PCLK2;

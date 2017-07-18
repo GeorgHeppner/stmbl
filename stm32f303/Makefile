@@ -110,6 +110,8 @@ SOURCES += $(HAL_DRV_DIR)/Src/stm32f3xx_hal_tim.c
 SOURCES += $(HAL_DRV_DIR)/Src/stm32f3xx_hal_tim_ex.c
 SOURCES += $(HAL_DRV_DIR)/Src/stm32f3xx_hal_uart.c
 SOURCES += $(HAL_DRV_DIR)/Src/stm32f3xx_hal_uart_ex.c
+SOURCES += $(HAL_DRV_DIR)/Src/stm32f3xx_hal_can.c
+# SOURCES += $(HAL_DRV_DIR)/Src/stm32f3xx_hal_can_ex.c
 
 LDSCRIPT = stm32f303/STM32F303CBTx_FLASH.ld
 
