@@ -10,46 +10,41 @@ HAL_COMP(can);
 HAL_PIN(pos);
 HAL_PIN(vel);
 
-//copied from florolf
-/*
-static void init_can(void)
-{
-	// configure ports
-	GPIOB->MODER |= GPIO_MODE(8, GPIO_MODE_AF) |
-		       GPIO_MODE(9, GPIO_MODE_AF);
+typedef struct  {
+  unsigned int   id;                    /* 29 bit identifier */
+  unsigned char  data[8];               /* Data field */
+  unsigned char  len;                   /* Length of data field in bytes */
+  unsigned char  format;                /* 0 - STANDARD, 1- EXTENDED IDENTIFIER */
+  unsigned char  type;                  /* 0 - DATA FRAME, 1 - REMOTE FRAME */
+} CAN_msg;
 
-	GPIOB->AFRH |= GPIO_AFR(0, GPIO_AF9) |
-	              GPIO_AFR(1, GPIO_AF9);
+CAN_msg       CAN_RxMsg;                      /* CAN message for receiving */
 
-	// configure CAN
-	CAN_MCR(CANx) &= ~CAN_MCR_SLEEP;
-	CAN_MCR(CANx) |= CAN_MCR_INRQ;
+uint32_t      CAN_RxRdy = 0;              /* CAN HW received a message */
 
-	while (!(CAN_MSR(CANx) & CAN_MSR_INAK))
-		;
+static uint32_t CAN_filterIdx[2] = {0,0};        /* static variable for the filter index */
 
-	// BPR = 4 -> Tq = 500 ns at 8MHz
-	CAN_BTR(CANx) = CAN_BTR_SJW_2TQ | CAN_BTR_TS1_9TQ | CAN_BTR_TS2_6TQ | 3;
+uint32_t      CAN_msgId     = 0;
 
-	generate_id(0);
-
-	CAN_MCR(CANx) &= ~CAN_MCR_INRQ;
-	while ((CAN_MSR(CANx) & CAN_MSR_INAK))
-		;
-}
-*/
-
-/* CAN init function */
+uint8_t dummyload = 100;
 
 CAN_HandleTypeDef hcan;
 
-/* USER CODE BEGIN PV */
+uint32_t CAN_ReceiveMessage1 = 0;
+uint32_t CAN_ReceiveMessage2 = 0;
+
+
+#define STANDARD_FORMAT  0
+#define EXTENDED_FORMAT  1
+
+#define DATA_FRAME       0
+#define REMOTE_FRAME     1
+
+
 static CanTxMsgTypeDef myTxMessage;
 static CanRxMsgTypeDef myRxMessage;
 static CAN_FilterConfTypeDef myFilter;
-/* USER CODE END PV */
 
-/* CAN init function */
 static void MX_CAN_Init(void)
 {
 
@@ -98,10 +93,62 @@ static void MX_CAN_Init(void)
   {
     Error_Handler();
   }
+
+  myFilter.FilterNumber = 0;
+  myFilter.FilterMode = CAN_FILTERMODE_IDMASK;
+  myFilter.FilterScale = CAN_FILTERSCALE_32BIT;
+  myFilter.FilterIdHigh = 0x0000;
+  myFilter.FilterIdLow = 0x0000;
+  myFilter.FilterMaskIdHigh = 0x0000;
+  myFilter.FilterMaskIdLow = 0x0000;
+  myFilter.FilterFIFOAssignment = 0;
+  myFilter.FilterActivation = ENABLE;
+
+  HAL_CAN_ConfigFilter(&hcan,&myFilter);
+
+  hcan.pRxMsg= &myRxMessage;
+}
+
+void CAN_rdMsg (uint32_t ctrl, CAN_msg *msg)  {
+                                              /* Read identifier information  */
+  if ((CAN->sFIFOMailBox[0].RIR & CAN_ID_EXT) == 0) {
+    msg->format = STANDARD_FORMAT;
+    msg->id     = 0x000007FF & (CAN->sFIFOMailBox[0].RIR >> 21);
+  } else {
+    msg->format = EXTENDED_FORMAT;
+    msg->id     = 0x1FFFFFFF & (CAN->sFIFOMailBox[0].RIR >> 3);
+  }
+                                              /* Read type information        */
+  if ((CAN->sFIFOMailBox[0].RIR & CAN_RTR_REMOTE) == 0) {
+    msg->type =   DATA_FRAME;
+  } else {
+    msg->type = REMOTE_FRAME;
+  }
+                                              /* Read number of rec. bytes    */
+  msg->len     = (CAN->sFIFOMailBox[0].RDTR      ) & 0x0F;
+                                              /* Read data bytes              */
+  msg->data[0] = (CAN->sFIFOMailBox[0].RDLR      ) & 0xFF;
+  msg->data[1] = (CAN->sFIFOMailBox[0].RDLR >>  8) & 0xFF;
+  msg->data[2] = (CAN->sFIFOMailBox[0].RDLR >> 16) & 0xFF;
+  msg->data[3] = (CAN->sFIFOMailBox[0].RDLR >> 24) & 0xFF;
+
+  msg->data[4] = (CAN->sFIFOMailBox[0].RDHR      ) & 0xFF;
+  msg->data[5] = (CAN->sFIFOMailBox[0].RDHR >>  8) & 0xFF;
+  msg->data[6] = (CAN->sFIFOMailBox[0].RDHR >> 16) & 0xFF;
+  msg->data[7] = (CAN->sFIFOMailBox[0].RDHR >> 24) & 0xFF;
+
+  dummyload = msg->data[0];
+
+  CAN->RF0R |= CAN_RF0R_RFOM0;             /* Release FIFO 0 output mailbox */
+}
+
+void read_CAN(void)
+{
+  CAN_rdMsg (1, &CAN_RxMsg);
 }
 
 void testTransmit(char * foo) {
-  printf("otter");
+  printf("otter\n");
   hcan.pTxMsg = &myTxMessage;
 
   myTxMessage.DLC = 4;
@@ -129,6 +176,15 @@ static void rt_func(float period, volatile void * ctx_ptr, volatile hal_pin_inst
 
   PIN(pos) = 1;
   PIN(vel) = 0;
+
+  if (CAN->RF0R & CAN_RF0R_FMP0) {           /* message pending ?              */
+    read_CAN ();                         /* read the message               */
+    CAN_RxRdy = 1;                              /*  set receive flag              */
+    CAN_ReceiveMessage1 = CAN->sFIFOMailBox[0].RDLR;  /* read data */
+    CAN_ReceiveMessage2 = CAN->sFIFOMailBox[0].RDLR >> 8;  /* read data */
+    CAN->RF0R |= CAN_RF0R_RFOM0;            /* release FIFO */
+    printf("data: %d\n", dummyload);
+  }
 }
 
 hal_comp_t can_comp_struct = {
