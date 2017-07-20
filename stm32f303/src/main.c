@@ -353,7 +353,7 @@ int main(void)
   {
      hal_run_nrt();
      cdc_poll();
-     HAL_Delay(1);
+     //HAL_Delay(1);
   }
 
 }

@@ -9,6 +9,7 @@ HAL_COMP(can);
 
 HAL_PIN(pos);
 HAL_PIN(vel);
+//HAL_PIN(enable);
 
 typedef struct  {
   unsigned int   id;                    /* 29 bit identifier */
@@ -25,8 +26,6 @@ uint32_t      CAN_RxRdy = 0;              /* CAN HW received a message */
 static uint32_t CAN_filterIdx[2] = {0,0};        /* static variable for the filter index */
 
 uint32_t      CAN_msgId     = 0;
-
-uint8_t dummyload = 100;
 
 CAN_HandleTypeDef hcan;
 
@@ -137,10 +136,48 @@ void CAN_rdMsg (uint32_t ctrl, CAN_msg *msg)  {
   msg->data[6] = (CAN->sFIFOMailBox[0].RDHR >> 16) & 0xFF;
   msg->data[7] = (CAN->sFIFOMailBox[0].RDHR >> 24) & 0xFF;
 
-  dummyload = msg->data[0];
-
   CAN->RF0R |= CAN_RF0R_RFOM0;             /* Release FIFO 0 output mailbox */
+
+  if (msg->len == 8) {
+    printf("data valid\n");
+
+
+    if ((msg->data[0])  & 0x01) { //set position
+      float pos = 0;
+      uint8_t b[] = {msg->data[4], msg->data[3], msg->data[2], msg->data[1]};
+      memcpy(&pos, &b, sizeof(pos));
+      PIN(pos) = pos;
+    }
+
+    else if ((msg->data[0] >> 1)  & 0x01)) { //set velocity
+      float vel = 0;
+      uint8_t b[] = {msg->data[4], msg->data[3], msg->data[2], msg->data[1]};
+      memcpy(&vel, &b, sizeof(vel));
+      PIN(vel) = vel;
+    }
+
+    else { //polling
+      printf("polling...\n");
+    }
+
+    /*if ((msg->data[0] >> 2)  & 0x01)) { //home joint
+      if ((msg->data[0] >> 3)  & 0x01)) { //set direction
+
+      }
+      else {
+
+      }
+    }*/
+
+    /*if ((msg->data[0] >> 4)  & 0x01)) { //arm motor
+      PIN(enable) = 1;
+    }
+    else {
+      PIN(enable) = 0;
+    }*/
+  }
 }
+
 
 void read_CAN(void)
 {
@@ -148,7 +185,6 @@ void read_CAN(void)
 }
 
 void testTransmit(char * foo) {
-  printf("otter\n");
   hcan.pTxMsg = &myTxMessage;
 
   myTxMessage.DLC = 4;
@@ -159,8 +195,7 @@ void testTransmit(char * foo) {
   myTxMessage.Data[2] = 0xBE;
   myTxMessage.Data[3] = 0xEF;
 
-  HAL_CAN_Transmit_IT(&hcan);
-  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_7);
+  HAL_CAN_Transmit(&hcan, HAL_MAX_DELAY);
 }
 COMMAND("cantx", testTransmit);
 
@@ -170,27 +205,24 @@ static void nrt_init(volatile void * ctx_ptr, volatile hal_pin_inst_t * pin_ptr)
   MX_CAN_Init();
 }
 
-static void rt_func(float period, volatile void * ctx_ptr, volatile hal_pin_inst_t * pin_ptr){
+static void nrt_func(float period, volatile void * ctx_ptr, volatile hal_pin_inst_t * pin_ptr){
   // struct enc_ctx_t * ctx = (struct enc_ctx_t *)ctx_ptr;
   struct can_pin_ctx_t * pins = (struct can_pin_ctx_t *)pin_ptr;
 
-  PIN(pos) = 1;
-  PIN(vel) = 0;
 
-  if (CAN->RF0R & CAN_RF0R_FMP0) {           /* message pending ?              */
-    read_CAN ();                         /* read the message               */
+  if (CAN->RF0R & CAN_RF0R_FMP0) {           /* message pending ?*/
+    read_CAN();                         /* read the message               */
     CAN_RxRdy = 1;                              /*  set receive flag              */
     CAN_ReceiveMessage1 = CAN->sFIFOMailBox[0].RDLR;  /* read data */
     CAN_ReceiveMessage2 = CAN->sFIFOMailBox[0].RDLR >> 8;  /* read data */
     CAN->RF0R |= CAN_RF0R_RFOM0;            /* release FIFO */
-    printf("data: %d\n", dummyload);
   }
 }
 
 hal_comp_t can_comp_struct = {
   .name = "can",
-  .nrt = 0,
-  .rt = rt_func,
+  .nrt = nrt_func,
+  .rt = 0,//rt_func,
   .frt = 0,
   .nrt_init = nrt_init,
   .rt_start = 0,
