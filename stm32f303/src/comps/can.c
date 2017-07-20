@@ -169,12 +169,12 @@ void CAN_rdMsg (uint32_t ctrl, CAN_msg *msg)  {
       }
     }*/
 
-    /*if ((msg->data[0] >> 4)  & 0x01)) { //arm motor
+    if ((msg->data[0] >> 4)  & 0x01)) { //arm motor
       PIN(enable) = 1;
     }
     else {
       PIN(enable) = 0;
-    }*/
+    }
   }
 }
 
