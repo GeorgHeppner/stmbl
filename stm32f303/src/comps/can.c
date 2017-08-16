@@ -9,7 +9,21 @@ HAL_COMP(can);
 
 HAL_PIN(pos);
 HAL_PIN(vel);
-//HAL_PIN(enable);
+HAL_PIN(enable);
+
+HAL_PIN(pos_in);
+HAL_PIN(vel_in);
+
+#define TX_ADDRESS  0x0001
+#define RX_ADDRESS  0x0006
+
+uint8_t errors = 0b00000000; // 0: motor disconnected / 1: motor short / 3: position error / 3: overcurrent / 4: undervoltage / 5: overvoltage / 6: CAN timeout / 7: hardfault
+uint8_t current = 0;         // motor current in 1/10 A (100mA / LSB)
+
+uint8_t mode = 0; //0 = pos, 1 = vel
+
+float pos = 0, vel = 0, pos_in = 0, vel_in = 0;
+uint8_t enable = 0;
 
 typedef struct  {
   unsigned int   id;                    /* 29 bit identifier */
@@ -96,10 +110,10 @@ static void MX_CAN_Init(void)
   myFilter.FilterNumber = 0;
   myFilter.FilterMode = CAN_FILTERMODE_IDMASK;
   myFilter.FilterScale = CAN_FILTERSCALE_32BIT;
-  myFilter.FilterIdHigh = 0x0000;
+  myFilter.FilterIdHigh = RX_ADDRESS << 5;
   myFilter.FilterIdLow = 0x0000;
-  myFilter.FilterMaskIdHigh = 0x0000;
-  myFilter.FilterMaskIdLow = 0x0000;
+  myFilter.FilterMaskIdHigh = 0xFFFF;
+  myFilter.FilterMaskIdLow = 0xFFFF;
   myFilter.FilterFIFOAssignment = 0;
   myFilter.FilterActivation = ENABLE;
 
@@ -139,21 +153,28 @@ void CAN_rdMsg (uint32_t ctrl, CAN_msg *msg)  {
   CAN->RF0R |= CAN_RF0R_RFOM0;             /* Release FIFO 0 output mailbox */
 
   if (msg->len == 8) {
-    printf("data valid\n");
-
-
     if ((msg->data[0])  & 0x01) { //set position
-      float pos = 0;
       uint8_t b[] = {msg->data[4], msg->data[3], msg->data[2], msg->data[1]};
       memcpy(&pos, &b, sizeof(pos));
-      PIN(pos) = pos;
+
+      if (mode == 1) {
+        mode = 0;
+        hal_parse("ypid0.pos_p = 10");
+
+        hal_parse("ypid0.vel_ext_cmd = vel1.vel");
+      }
     }
 
-    else if ((msg->data[0] >> 1)  & 0x01)) { //set velocity
-      float vel = 0;
+    else if ((msg->data[0] >> 1)  & 0x01) { //set velocity
       uint8_t b[] = {msg->data[4], msg->data[3], msg->data[2], msg->data[1]};
       memcpy(&vel, &b, sizeof(vel));
-      PIN(vel) = vel;
+
+      if (mode == 0) {
+        mode = 1;
+        hal_parse("ypid0.pos_p = 0");
+
+        hal_parse("ypid0.vel_ext_cmd = can0.vel");
+      }
     }
 
     else { //polling
@@ -169,12 +190,53 @@ void CAN_rdMsg (uint32_t ctrl, CAN_msg *msg)  {
       }
     }*/
 
-    if ((msg->data[0] >> 4)  & 0x01)) { //arm motor
-      PIN(enable) = 1;
+    if ((msg->data[0] >> 4)  & 0x01) { //arm motor
+      enable = 1;
     }
     else {
-      PIN(enable) = 0;
+      enable = 0;
     }
+
+    if ((msg->data[0] >> 5)  & 0x01) { //get position
+      uint8_t b[] = {0,0,0,0};
+      memcpy(&b, &pos_in, sizeof(pos_in));
+      hcan.pTxMsg = &myTxMessage;
+
+      myTxMessage.DLC = 8;
+      myTxMessage.StdId = TX_ADDRESS;
+      myTxMessage.IDE = CAN_ID_STD;
+      myTxMessage.Data[0] = msg->data[0];
+      myTxMessage.Data[1] = b[3];
+      myTxMessage.Data[2] = b[2];
+      myTxMessage.Data[3] = b[1];
+      myTxMessage.Data[4] = b[0];
+      myTxMessage.Data[5] = 0;
+      myTxMessage.Data[6] = 0;
+      myTxMessage.Data[7] = 0;
+
+      HAL_CAN_Transmit(&hcan, HAL_MAX_DELAY);
+    }
+
+    else if ((msg->data[0] >> 6)  & 0x01) { //get velocity
+      uint8_t b[] = {0,0,0,0};
+      memcpy(&b, &vel_in, sizeof(vel_in));
+
+      myTxMessage.DLC = 8;
+      myTxMessage.StdId = TX_ADDRESS;
+      myTxMessage.IDE = CAN_ID_STD;
+      myTxMessage.Data[0] = msg->data[0];
+      myTxMessage.Data[1] = b[3];
+      myTxMessage.Data[2] = b[2];
+      myTxMessage.Data[3] = b[1];
+      myTxMessage.Data[4] = b[0];
+      myTxMessage.Data[5] = 0;
+      myTxMessage.Data[6] = 0;
+      myTxMessage.Data[7] = 0;
+
+      HAL_CAN_Transmit(&hcan, HAL_MAX_DELAY);
+    }
+
+
   }
 }
 
@@ -188,7 +250,7 @@ void testTransmit(char * foo) {
   hcan.pTxMsg = &myTxMessage;
 
   myTxMessage.DLC = 4;
-  myTxMessage.StdId = 0x234;
+  myTxMessage.StdId = TX_ADDRESS;
   myTxMessage.IDE = CAN_ID_STD;
   myTxMessage.Data[0] = 0xDE;
   myTxMessage.Data[1] = 0xAD;
@@ -217,6 +279,13 @@ static void nrt_func(float period, volatile void * ctx_ptr, volatile hal_pin_ins
     CAN_ReceiveMessage2 = CAN->sFIFOMailBox[0].RDLR >> 8;  /* read data */
     CAN->RF0R |= CAN_RF0R_RFOM0;            /* release FIFO */
   }
+
+  PIN(pos) = pos;
+  PIN(vel) = vel;
+  PIN(enable) = enable;
+
+  pos_in = PIN(pos_in);
+  vel_in = PIN(vel_in);
 }
 
 hal_comp_t can_comp_struct = {

@@ -20,7 +20,7 @@ static void rt_func(float period, volatile void * ctx_ptr, volatile hal_pin_inst
   float udc = MAX(PIN(udc), 1.0);
   int32_t dcpwm  = PIN(uq)/2.0/udc * 4800;
   PWM_U = CLAMP(2400 + dcpwm , 50, 4750);
-  PWM_V = CLAMP(2400 - dcpwm , 50, 4750);
+  PWM_W = CLAMP(2400 - dcpwm , 50, 4750);
 }
 
 hal_comp_t hvdc_comp_struct = {

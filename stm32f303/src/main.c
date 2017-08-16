@@ -139,7 +139,7 @@ int main(void)
 {
 
     /* USER CODE BEGIN 1 */
-    SCB->VTOR = 0x8004000;
+    SCB->VTOR = 0x8000000;
     /* USER CODE END 1 */
 
     /* MCU Configuration----------------------------------------------------------*/
@@ -251,6 +251,7 @@ int main(void)
     hal_init(1.0 / 15000.0, 0.0);
     // hal load comps
     load_comp(comp_by_name("term"));
+    load_comp(comp_by_name("enc"));
     load_comp(comp_by_name("can"));
     load_comp(comp_by_name("sim"));
     load_comp(comp_by_name("io"));
@@ -264,7 +265,6 @@ int main(void)
     // load_comp(comp_by_name("hv"));
     load_comp(comp_by_name("hvdc"));
     // load_comp(comp_by_name("dc"));
-    load_comp(comp_by_name("enc"));
     // load_comp(comp_by_name("curpid"));
     // hal parse config
     hal_init_nrt();
@@ -313,6 +313,9 @@ int main(void)
     hal_parse("term0.wave2 = vel1.vel");
     hal_parse("term0.wave3 = vel0.vel");
 
+    hal_parse("can0.pos_in = enc0.pos");
+    hal_parse("can0.vel_in = vel1.vel");
+
     hal_parse("term0.gain0 = 20.0");
     hal_parse("term0.gain1 = 20.0");
     hal_parse("term0.gain2 = 1.0");
@@ -336,6 +339,10 @@ int main(void)
     hal_parse("ypid0.max_out = io0.udc");
     hal_parse("hvdc0.uq = ypid0.out");
     hal_parse("hvdc0.udc = io0.udc");
+
+    hal_parse("ypid0.enable = can0.enable");
+
+    hal_parse("vel1.pos_in = can0.pos");
     // hal_parse("ypid0.saturated", "fault0.sat");
     // hal_parse("ypid0.pos_error", "fault0.pos_error");
     // hal_parse("conf0.acc_p", "ypid0.vel_p");//TODO: rename config pins?

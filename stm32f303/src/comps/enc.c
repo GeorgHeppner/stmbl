@@ -17,10 +17,10 @@ static void nrt_init(volatile void * ctx_ptr, volatile hal_pin_inst_t * pin_ptr)
   // struct enc_ctx_t * ctx = (struct enc_ctx_t *)ctx_ptr;
   struct enc_pin_ctx_t * pins = (struct enc_pin_ctx_t *)pin_ptr;
   __HAL_RCC_TIM1_CLK_ENABLE();
-  
-  /**TIM1 GPIO Configuration    
+
+  /**TIM1 GPIO Configuration
   PA8     ------> TIM1_CH1
-  PA9     ------> TIM1_CH2 
+  PA9     ------> TIM1_CH2
   */
   GPIO_InitTypeDef GPIO_InitStruct;
   GPIO_InitStruct.Pin = GPIO_PIN_8|GPIO_PIN_9;
@@ -32,11 +32,11 @@ static void nrt_init(volatile void * ctx_ptr, volatile hal_pin_inst_t * pin_ptr)
 
   TIM_Encoder_InitTypeDef sConfig;
   TIM_MasterConfigTypeDef sMasterConfig;
-  
+
   htim1.Instance = TIM1;
   htim1.Init.Prescaler = 0;
   htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim1.Init.Period = 2000;
+  htim1.Init.Period = 4000;
   htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim1.Init.RepetitionCounter = 0;
   // htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
@@ -50,14 +50,14 @@ static void nrt_init(volatile void * ctx_ptr, volatile hal_pin_inst_t * pin_ptr)
   sConfig.IC2Prescaler = TIM_ICPSC_DIV1;
   sConfig.IC2Filter = 0;
   HAL_TIM_Encoder_Init(&htim1, &sConfig);
-  
+
   sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
   sMasterConfig.MasterOutputTrigger2 = TIM_TRGO2_RESET;
   sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
   HAL_TIMEx_MasterConfigSynchronization(&htim1, &sMasterConfig);
-  
+
   HAL_TIM_Encoder_Start(&htim1, TIM_CHANNEL_1 | TIM_CHANNEL_2);
-  
+
 }
 
 static void rt_func(float period, volatile void * ctx_ptr, volatile hal_pin_inst_t * pin_ptr){
@@ -65,7 +65,7 @@ static void rt_func(float period, volatile void * ctx_ptr, volatile hal_pin_inst
   struct enc_pin_ctx_t * pins = (struct enc_pin_ctx_t *)pin_ptr;
   PIN(a) = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_8);
   PIN(b) = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_9);
-  PIN(pos) = mod(TIM1->CNT * 2.0f * M_PI / 2000.0f);
+  PIN(pos) = mod(TIM1->CNT * 2.0f * M_PI / 4000.0f);
 }
 
 hal_comp_t enc_comp_struct = {

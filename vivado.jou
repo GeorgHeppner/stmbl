@@ -1,0 +1,544 @@
+#-----------------------------------------------------------
+# Vivado v2017.1 (64-bit)
+# SW Build 1846317 on Fri Apr 14 18:54:47 MDT 2017
+# IP Build 1846188 on Fri Apr 14 20:52:08 MDT 2017
+# Start of session at: Sun Jul 23 21:15:01 2017
+# Process ID: 13632
+# Current directory: /home/niklas/stmbl
+# Command line: vivado
+# Log file: /home/niklas/stmbl/vivado.log
+# Journal file: /home/niklas/stmbl/vivado.jou
+#-----------------------------------------------------------
+start_gui
+open_project /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.xpr
+open_bd_design {/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd}
+ipx::edit_ip_in_project -upgrade true -name ultrasonicShiftControl_v1_1_2_project -directory /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.tmp/ultrasonicShiftControl_v1_1_2_project /home/niklas/xilinx/ip_repo/ultrasonicShiftControl_1.0/component.xml
+update_compile_order -fileset sources_1
+set_property version 1.1.3 [ipx::current_core]
+ipx::merge_project_changes ports [ipx::current_core]
+set_property previous_version_for_upgrade {user.org:user:ultrasonicShiftControl:1.0 user.org:user:ultrasonicShiftControl:1.0.1 user.org:user:ultrasonicShiftControl:1.0.2 user.org:user:ultrasonicShiftControl:1.0.3 user.org:user:ultrasonicShiftControl:1.1.0 user.org:user:ultrasonicShiftControl:1.1.1 user.org:user:ultrasonicShiftControl:1.1.2} [ipx::current_core]
+set_property core_revision 1 [ipx::current_core]
+ipx::create_xgui_files [ipx::current_core]
+ipx::update_checksums [ipx::current_core]
+ipx::save_core [ipx::current_core]
+close_project -delete
+update_ip_catalog -rebuild -repo_path /home/niklas/xilinx/ip_repo/ultrasonicShiftControl_1.0
+report_ip_status -name ip_status 
+upgrade_ip -vlnv user.org:user:ultrasonicShiftControl:1.1.3 [get_ips  z_turn_ultrasonicShiftControl_0_0] -log ip_upgrade.log
+export_ip_user_files -of_objects [get_ips z_turn_ultrasonicShiftControl_0_0] -no_script -sync -force -quiet
+generate_target all [get_files  /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd]
+export_ip_user_files -of_objects [get_files /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd] -no_script -sync -force -quiet
+export_simulation -of_objects [get_files /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd] -directory /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files/sim_scripts -ip_user_files_dir /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files -ipstatic_source_dir /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files/ipstatic -lib_map_path [list {modelsim=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/modelsim} {questa=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/questa} {ies=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/ies} {vcs=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/vcs} {riviera=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/riviera}] -use_ip_compiled_libs -force -quiet
+report_ip_status -name ip_status 
+reset_run synth_2
+launch_runs impl_2 -to_step write_bitstream -jobs 4
+wait_on_run impl_2
+ipx::edit_ip_in_project -upgrade true -name ultrasonicShiftControl_v1_1_3_project -directory /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.tmp/ultrasonicShiftControl_v1_1_3_project /home/niklas/xilinx/ip_repo/ultrasonicShiftControl_1.0/component.xml
+update_compile_order -fileset sources_1
+set_property core_revision 2 [ipx::current_core]
+ipx::create_xgui_files [ipx::current_core]
+ipx::update_checksums [ipx::current_core]
+ipx::save_core [ipx::current_core]
+close_project -delete
+update_ip_catalog -rebuild -repo_path /home/niklas/xilinx/ip_repo/ultrasonicShiftControl_1.0
+report_ip_status -name ip_status 
+upgrade_ip -vlnv user.org:user:ultrasonicShiftControl:1.1.3 [get_ips  z_turn_ultrasonicShiftControl_0_0] -log ip_upgrade.log
+export_ip_user_files -of_objects [get_ips z_turn_ultrasonicShiftControl_0_0] -no_script -sync -force -quiet
+generate_target all [get_files  /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd]
+export_ip_user_files -of_objects [get_files /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd] -no_script -sync -force -quiet
+export_simulation -of_objects [get_files /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd] -directory /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files/sim_scripts -ip_user_files_dir /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files -ipstatic_source_dir /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files/ipstatic -lib_map_path [list {modelsim=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/modelsim} {questa=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/questa} {ies=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/ies} {vcs=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/vcs} {riviera=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/riviera}] -use_ip_compiled_libs -force -quiet
+report_ip_status -name ip_status 
+reset_run synth_2
+launch_runs impl_2 -to_step write_bitstream -jobs 4
+wait_on_run impl_2
+ipx::edit_ip_in_project -upgrade true -name ultrasonicShiftControl_v1_1_3_project -directory /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.tmp/ultrasonicShiftControl_v1_1_3_project /home/niklas/xilinx/ip_repo/ultrasonicShiftControl_1.0/component.xml
+update_compile_order -fileset sources_1
+set_property version 1.1.4 [ipx::current_core]
+set_property previous_version_for_upgrade {user.org:user:ultrasonicShiftControl:1.0 user.org:user:ultrasonicShiftControl:1.0.1 user.org:user:ultrasonicShiftControl:1.0.2 user.org:user:ultrasonicShiftControl:1.0.3 user.org:user:ultrasonicShiftControl:1.1.0 user.org:user:ultrasonicShiftControl:1.1.1 user.org:user:ultrasonicShiftControl:1.1.2 user.org:user:ultrasonicShiftControl:1.1.3} [ipx::current_core]
+set_property core_revision 1 [ipx::current_core]
+ipx::create_xgui_files [ipx::current_core]
+ipx::update_checksums [ipx::current_core]
+ipx::save_core [ipx::current_core]
+close_project -delete
+update_ip_catalog -rebuild -repo_path /home/niklas/xilinx/ip_repo/ultrasonicShiftControl_1.0
+report_ip_status -name ip_status 
+upgrade_ip -vlnv user.org:user:ultrasonicShiftControl:1.1.4 [get_ips  z_turn_ultrasonicShiftControl_0_0] -log ip_upgrade.log
+export_ip_user_files -of_objects [get_ips z_turn_ultrasonicShiftControl_0_0] -no_script -sync -force -quiet
+generate_target all [get_files  /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd]
+export_ip_user_files -of_objects [get_files /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd] -no_script -sync -force -quiet
+export_simulation -of_objects [get_files /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd] -directory /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files/sim_scripts -ip_user_files_dir /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files -ipstatic_source_dir /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files/ipstatic -lib_map_path [list {modelsim=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/modelsim} {questa=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/questa} {ies=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/ies} {vcs=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/vcs} {riviera=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/riviera}] -use_ip_compiled_libs -force -quiet
+report_ip_status -name ip_status 
+reset_run synth_2
+launch_runs impl_2 -to_step write_bitstream -jobs 4
+wait_on_run impl_2
+file copy -force /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.runs/impl_2/z_turn_wrapper.bit /home/niklas/ampttest.bit
+delete_bd_objs [get_bd_nets ultrasonicShiftControl_0_OUT_B34_LN]
+delete_bd_objs [get_bd_nets ultrasonicShiftControl_0_OUT_B34_LP]
+startgroup
+set_property -dict [list CONFIG.CLKOUT1_REQUESTED_OUT_FREQ {32.768} CONFIG.MMCM_DIVCLK_DIVIDE {2} CONFIG.MMCM_CLKFBOUT_MULT_F {19} CONFIG.MMCM_CLKOUT0_DIVIDE_F {29} CONFIG.CLKOUT1_JITTER {212.026} CONFIG.CLKOUT1_PHASE_ERROR {164.801}] [get_bd_cells clk_wiz_0]
+endgroup
+save_bd_design
+reset_run synth_2
+launch_runs impl_2 -to_step write_bitstream -jobs 4
+wait_on_run impl_2
+file copy -force /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.runs/impl_2/z_turn_wrapper.bit /home/niklas/ampttest.bit
+connect_bd_net [get_bd_ports IO_B34_LP] [get_bd_pins ultrasonicShiftControl_0/OUT_B34_LP]
+connect_bd_net [get_bd_ports IO_B34_LN] [get_bd_pins ultrasonicShiftControl_0/OUT_B34_LN]
+ipx::edit_ip_in_project -upgrade true -name ultrasonicShiftControl_v1_1_4_project -directory /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.tmp/ultrasonicShiftControl_v1_1_4_project /home/niklas/xilinx/ip_repo/ultrasonicShiftControl_1.0/component.xml
+update_compile_order -fileset sources_1
+ipx::edit_ip_in_project -upgrade true -name ultrasonicShiftControl_v1_1_4_project -directory /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.tmp/ultrasonicShiftControl_v1_1_4_project/ultrasonicShiftControl_v1_1_4_project.tmp/ultrasonicShiftControl_v1_1_4_project /home/niklas/xilinx/ip_repo/ultrasonicShiftControl_1.0/component.xml
+set_property core_revision 2 [ipx::current_core]
+ipx::create_xgui_files [ipx::current_core]
+ipx::update_checksums [ipx::current_core]
+ipx::save_core [ipx::current_core]
+close_project -delete
+update_ip_catalog -rebuild -repo_path /home/niklas/xilinx/ip_repo/ultrasonicShiftControl_1.0
+report_ip_status -name ip_status 
+upgrade_ip -vlnv user.org:user:ultrasonicShiftControl:1.1.4 [get_ips  z_turn_ultrasonicShiftControl_0_0] -log ip_upgrade.log
+export_ip_user_files -of_objects [get_ips z_turn_ultrasonicShiftControl_0_0] -no_script -sync -force -quiet
+generate_target all [get_files  /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd]
+export_ip_user_files -of_objects [get_files /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd] -no_script -sync -force -quiet
+export_simulation -of_objects [get_files /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd] -directory /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files/sim_scripts -ip_user_files_dir /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files -ipstatic_source_dir /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files/ipstatic -lib_map_path [list {modelsim=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/modelsim} {questa=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/questa} {ies=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/ies} {vcs=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/vcs} {riviera=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/riviera}] -use_ip_compiled_libs -force -quiet
+report_ip_status -name ip_status 
+reset_run synth_2
+launch_runs impl_2 -to_step write_bitstream -jobs 4
+wait_on_run impl_2
+file copy -force /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.runs/impl_2/z_turn_wrapper.bit /home/niklas/ampttest.bit
+ipx::edit_ip_in_project -upgrade true -name ultrasonicShiftControl_v1_1_4_project -directory /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.tmp/ultrasonicShiftControl_v1_1_4_project /home/niklas/xilinx/ip_repo/ultrasonicShiftControl_1.0/component.xml
+update_compile_order -fileset sources_1
+ipx::edit_ip_in_project -upgrade true -name ultrasonicShiftControl_v1_1_4_project -directory /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.tmp/ultrasonicShiftControl_v1_1_4_project/ultrasonicShiftControl_v1_1_4_project.tmp/ultrasonicShiftControl_v1_1_4_project /home/niklas/xilinx/ip_repo/ultrasonicShiftControl_1.0/component.xml
+set_property core_revision 3 [ipx::current_core]
+ipx::create_xgui_files [ipx::current_core]
+ipx::update_checksums [ipx::current_core]
+ipx::save_core [ipx::current_core]
+close_project -delete
+update_ip_catalog -rebuild -repo_path /home/niklas/xilinx/ip_repo/ultrasonicShiftControl_1.0
+report_ip_status -name ip_status 
+upgrade_ip -vlnv user.org:user:ultrasonicShiftControl:1.1.4 [get_ips  z_turn_ultrasonicShiftControl_0_0] -log ip_upgrade.log
+export_ip_user_files -of_objects [get_ips z_turn_ultrasonicShiftControl_0_0] -no_script -sync -force -quiet
+generate_target all [get_files  /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd]
+export_ip_user_files -of_objects [get_files /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd] -no_script -sync -force -quiet
+export_simulation -of_objects [get_files /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd] -directory /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files/sim_scripts -ip_user_files_dir /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files -ipstatic_source_dir /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files/ipstatic -lib_map_path [list {modelsim=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/modelsim} {questa=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/questa} {ies=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/ies} {vcs=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/vcs} {riviera=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/riviera}] -use_ip_compiled_libs -force -quiet
+report_ip_status -name ip_status 
+reset_run synth_2
+launch_runs impl_2 -to_step write_bitstream -jobs 4
+wait_on_run impl_2
+file copy -force /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.runs/impl_2/z_turn_wrapper.bit /home/niklas/ampttest.bit
+ipx::edit_ip_in_project -upgrade true -name ultrasonicShiftControl_v1_1_4_project -directory /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.tmp/ultrasonicShiftControl_v1_1_4_project /home/niklas/xilinx/ip_repo/ultrasonicShiftControl_1.0/component.xml
+update_compile_order -fileset sources_1
+set_property version 1.1.5 [ipx::current_core]
+set_property previous_version_for_upgrade {user.org:user:ultrasonicShiftControl:1.0 user.org:user:ultrasonicShiftControl:1.0.1 user.org:user:ultrasonicShiftControl:1.0.2 user.org:user:ultrasonicShiftControl:1.0.3 user.org:user:ultrasonicShiftControl:1.1.0 user.org:user:ultrasonicShiftControl:1.1.1 user.org:user:ultrasonicShiftControl:1.1.2 user.org:user:ultrasonicShiftControl:1.1.3 user.org:user:ultrasonicShiftControl:1.1.4} [ipx::current_core]
+set_property core_revision 1 [ipx::current_core]
+ipx::create_xgui_files [ipx::current_core]
+ipx::update_checksums [ipx::current_core]
+ipx::save_core [ipx::current_core]
+close_project -delete
+update_ip_catalog -rebuild -repo_path /home/niklas/xilinx/ip_repo/ultrasonicShiftControl_1.0
+report_ip_status -name ip_status 
+upgrade_ip -vlnv user.org:user:ultrasonicShiftControl:1.1.5 [get_ips  z_turn_ultrasonicShiftControl_0_0] -log ip_upgrade.log
+export_ip_user_files -of_objects [get_ips z_turn_ultrasonicShiftControl_0_0] -no_script -sync -force -quiet
+generate_target all [get_files  /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd]
+export_ip_user_files -of_objects [get_files /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd] -no_script -sync -force -quiet
+export_simulation -of_objects [get_files /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd] -directory /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files/sim_scripts -ip_user_files_dir /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files -ipstatic_source_dir /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files/ipstatic -lib_map_path [list {modelsim=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/modelsim} {questa=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/questa} {ies=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/ies} {vcs=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/vcs} {riviera=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/riviera}] -use_ip_compiled_libs -force -quiet
+report_ip_status -name ip_status 
+reset_run synth_2
+launch_runs impl_2 -to_step write_bitstream -jobs 4
+wait_on_run impl_2
+file copy -force /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.runs/impl_2/z_turn_wrapper.bit /home/niklas/ampttest.bit
+ipx::edit_ip_in_project -upgrade true -name ultrasonicAXItoPWM_v2_1_3_project -directory /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.tmp/ultrasonicAXItoPWM_v2_1_3_project /home/niklas/xilinx/ip_repo/ultrasonicAXItoPWM_1.0/component.xml
+update_compile_order -fileset sources_1
+set_property version 2.1.4 [ipx::current_core]
+set_property previous_version_for_upgrade {user.org:user:ultrasonicAXItoPWM:1.0 user.org:user:ultrasonicAXItoPWM:1.1 user.org:user:ultrasonicAXItoPWM:1.1.2 user.org:user:ultrasonicAXItoPWM:1.1.3 user.org:user:ultrasonicAXItoPWM:1.1.4 user.org:user:ultrasonicAXItoPWM:1.1.5 user.org:user:ultrasonicAXItoPWM:1.1.6 user.org:user:ultrasonicAXItoPWM:1.1.7 user.org:user:ultrasonicAXItoPWM:1.1.8 user.org:user:ultrasonicAXItoPWM:1.1.9 user.org:user:ultrasonicAXItoPWM:1.1.10 user.org:user:ultrasonicAXItoPWM:1.1.11 user.org:user:ultrasonicAXItoPWM:1.1.12 user.org:user:ultrasonicAXItoPWM:1.1.13 user.org:user:ultrasonicAXItoPWM:1.1.14 user.org:user:ultrasonicAXItoPWM:1.1.15 user.org:user:ultrasonicAXItoPWM:1.1.16 user.org:user:ultrasonicAXItoPWM:1.1.17 user.org:user:ultrasonicAXItoPWM:1.1.18 user.org:user:ultrasonicAXItoPWM:1.1.19 user.org:user:ultrasonicAXItoPWM:1.1.20 user.org:user:ultrasonicAXItoPWM:1.1.21 user.org:user:ultrasonicAXItoPWM:1.1.22 user.org:user:ultrasonicAXItoPWM:1.1.23 user.org:user:ultrasonicAXItoPWM:1.1.24 user.org:user:ultrasonicAXItoPWM:1.1.25 user.org:user:ultrasonicAXItoPWM:1.1.26 user.org:user:ultrasonicAXItoPWM:2.0.0 user.org:user:ultrasonicAXItoPWM:2.0.1 user.org:user:ultrasonicAXItoPWM:2.0.2 user.org:user:ultrasonicAXItoPWM:2.1.2 user.org:user:ultrasonicAXItoPWM:2.1.3} [ipx::current_core]
+set_property core_revision 1 [ipx::current_core]
+ipx::create_xgui_files [ipx::current_core]
+ipx::update_checksums [ipx::current_core]
+ipx::save_core [ipx::current_core]
+close_project -delete
+update_ip_catalog -rebuild -repo_path /home/niklas/xilinx/ip_repo/ultrasonicAXItoPWM_1.0
+report_ip_status -name ip_status 
+upgrade_ip -vlnv user.org:user:ultrasonicAXItoPWM:2.1.4 [get_ips  z_turn_ultrasonicAXItoPWM_0_1] -log ip_upgrade.log
+export_ip_user_files -of_objects [get_ips z_turn_ultrasonicAXItoPWM_0_1] -no_script -sync -force -quiet
+generate_target all [get_files  /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd]
+export_ip_user_files -of_objects [get_files /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd] -no_script -sync -force -quiet
+export_simulation -of_objects [get_files /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd] -directory /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files/sim_scripts -ip_user_files_dir /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files -ipstatic_source_dir /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files/ipstatic -lib_map_path [list {modelsim=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/modelsim} {questa=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/questa} {ies=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/ies} {vcs=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/vcs} {riviera=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/riviera}] -use_ip_compiled_libs -force -quiet
+report_ip_status -name ip_status 
+startgroup
+set_property -dict [list CONFIG.CLKOUT1_REQUESTED_OUT_FREQ {6.25} CONFIG.MMCM_DIVCLK_DIVIDE {1} CONFIG.MMCM_CLKFBOUT_MULT_F {8} CONFIG.MMCM_CLKIN1_PERIOD {10.0} CONFIG.MMCM_CLKIN2_PERIOD {10.0} CONFIG.MMCM_CLKOUT0_DIVIDE_F {128} CONFIG.CLKOUT1_JITTER {251.196} CONFIG.CLKOUT1_PHASE_ERROR {114.212}] [get_bd_cells clk_wiz_0]
+endgroup
+save_bd_design
+reset_run synth_2
+launch_runs impl_2 -to_step write_bitstream -jobs 4
+wait_on_run impl_2
+file copy -force /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.runs/impl_2/z_turn_wrapper.bit /home/niklas/ampttest.bit
+ipx::edit_ip_in_project -upgrade true -name ultrasonicAXItoPWM_v2_1_4_project -directory /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.tmp/ultrasonicAXItoPWM_v2_1_4_project /home/niklas/xilinx/ip_repo/ultrasonicAXItoPWM_1.0/component.xml
+update_compile_order -fileset sources_1
+set_property version 2.1.5 [ipx::current_core]
+set_property previous_version_for_upgrade {user.org:user:ultrasonicAXItoPWM:1.0 user.org:user:ultrasonicAXItoPWM:1.1 user.org:user:ultrasonicAXItoPWM:1.1.2 user.org:user:ultrasonicAXItoPWM:1.1.3 user.org:user:ultrasonicAXItoPWM:1.1.4 user.org:user:ultrasonicAXItoPWM:1.1.5 user.org:user:ultrasonicAXItoPWM:1.1.6 user.org:user:ultrasonicAXItoPWM:1.1.7 user.org:user:ultrasonicAXItoPWM:1.1.8 user.org:user:ultrasonicAXItoPWM:1.1.9 user.org:user:ultrasonicAXItoPWM:1.1.10 user.org:user:ultrasonicAXItoPWM:1.1.11 user.org:user:ultrasonicAXItoPWM:1.1.12 user.org:user:ultrasonicAXItoPWM:1.1.13 user.org:user:ultrasonicAXItoPWM:1.1.14 user.org:user:ultrasonicAXItoPWM:1.1.15 user.org:user:ultrasonicAXItoPWM:1.1.16 user.org:user:ultrasonicAXItoPWM:1.1.17 user.org:user:ultrasonicAXItoPWM:1.1.18 user.org:user:ultrasonicAXItoPWM:1.1.19 user.org:user:ultrasonicAXItoPWM:1.1.20 user.org:user:ultrasonicAXItoPWM:1.1.21 user.org:user:ultrasonicAXItoPWM:1.1.22 user.org:user:ultrasonicAXItoPWM:1.1.23 user.org:user:ultrasonicAXItoPWM:1.1.24 user.org:user:ultrasonicAXItoPWM:1.1.25 user.org:user:ultrasonicAXItoPWM:1.1.26 user.org:user:ultrasonicAXItoPWM:2.0.0 user.org:user:ultrasonicAXItoPWM:2.0.1 user.org:user:ultrasonicAXItoPWM:2.0.2 user.org:user:ultrasonicAXItoPWM:2.1.2 user.org:user:ultrasonicAXItoPWM:2.1.3 user.org:user:ultrasonicAXItoPWM:2.1.4} [ipx::current_core]
+set_property core_revision 1 [ipx::current_core]
+ipx::create_xgui_files [ipx::current_core]
+ipx::update_checksums [ipx::current_core]
+ipx::save_core [ipx::current_core]
+close_project -delete
+update_ip_catalog -rebuild -repo_path /home/niklas/xilinx/ip_repo/ultrasonicAXItoPWM_1.0
+ipx::edit_ip_in_project -upgrade true -name ultrasonicShiftControl_v1_1_5_project -directory /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.tmp/ultrasonicShiftControl_v1_1_5_project /home/niklas/xilinx/ip_repo/ultrasonicShiftControl_1.0/component.xml
+update_compile_order -fileset sources_1
+set_property version 1.1.6 [ipx::current_core]
+set_property previous_version_for_upgrade {user.org:user:ultrasonicShiftControl:1.0 user.org:user:ultrasonicShiftControl:1.0.1 user.org:user:ultrasonicShiftControl:1.0.2 user.org:user:ultrasonicShiftControl:1.0.3 user.org:user:ultrasonicShiftControl:1.1.0 user.org:user:ultrasonicShiftControl:1.1.1 user.org:user:ultrasonicShiftControl:1.1.2 user.org:user:ultrasonicShiftControl:1.1.3 user.org:user:ultrasonicShiftControl:1.1.4 user.org:user:ultrasonicShiftControl:1.1.5} [ipx::current_core]
+set_property core_revision 1 [ipx::current_core]
+ipx::create_xgui_files [ipx::current_core]
+ipx::update_checksums [ipx::current_core]
+ipx::save_core [ipx::current_core]
+close_project -delete
+update_ip_catalog -rebuild -repo_path /home/niklas/xilinx/ip_repo/ultrasonicShiftControl_1.0
+report_ip_status -name ip_status 
+upgrade_ip [get_ips  {z_turn_ultrasonicAXItoPWM_0_1 z_turn_ultrasonicShiftControl_0_0}] -log ip_upgrade.log
+export_ip_user_files -of_objects [get_ips {z_turn_ultrasonicAXItoPWM_0_1 z_turn_ultrasonicShiftControl_0_0}] -no_script -sync -force -quiet
+generate_target all [get_files  /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd]
+export_ip_user_files -of_objects [get_files /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd] -no_script -sync -force -quiet
+export_simulation -of_objects [get_files /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd] -directory /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files/sim_scripts -ip_user_files_dir /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files -ipstatic_source_dir /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files/ipstatic -lib_map_path [list {modelsim=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/modelsim} {questa=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/questa} {ies=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/ies} {vcs=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/vcs} {riviera=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/riviera}] -use_ip_compiled_libs -force -quiet
+report_ip_status -name ip_status 
+reset_run synth_2
+launch_runs impl_2 -to_step write_bitstream -jobs 4
+wait_on_run impl_2
+file copy -force /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.runs/impl_2/z_turn_wrapper.bit /home/niklas/ampttest.bit
+ipx::edit_ip_in_project -upgrade true -name ultrasonicAXItoPWM_v2_1_5_project -directory /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.tmp/ultrasonicAXItoPWM_v2_1_5_project /home/niklas/xilinx/ip_repo/ultrasonicAXItoPWM_1.0/component.xml
+update_compile_order -fileset sources_1
+set_property core_revision 2 [ipx::current_core]
+ipx::create_xgui_files [ipx::current_core]
+ipx::update_checksums [ipx::current_core]
+ipx::save_core [ipx::current_core]
+set_property version 2.1.6 [ipx::current_core]
+set_property previous_version_for_upgrade {user.org:user:ultrasonicAXItoPWM:1.0 user.org:user:ultrasonicAXItoPWM:1.1 user.org:user:ultrasonicAXItoPWM:1.1.2 user.org:user:ultrasonicAXItoPWM:1.1.3 user.org:user:ultrasonicAXItoPWM:1.1.4 user.org:user:ultrasonicAXItoPWM:1.1.5 user.org:user:ultrasonicAXItoPWM:1.1.6 user.org:user:ultrasonicAXItoPWM:1.1.7 user.org:user:ultrasonicAXItoPWM:1.1.8 user.org:user:ultrasonicAXItoPWM:1.1.9 user.org:user:ultrasonicAXItoPWM:1.1.10 user.org:user:ultrasonicAXItoPWM:1.1.11 user.org:user:ultrasonicAXItoPWM:1.1.12 user.org:user:ultrasonicAXItoPWM:1.1.13 user.org:user:ultrasonicAXItoPWM:1.1.14 user.org:user:ultrasonicAXItoPWM:1.1.15 user.org:user:ultrasonicAXItoPWM:1.1.16 user.org:user:ultrasonicAXItoPWM:1.1.17 user.org:user:ultrasonicAXItoPWM:1.1.18 user.org:user:ultrasonicAXItoPWM:1.1.19 user.org:user:ultrasonicAXItoPWM:1.1.20 user.org:user:ultrasonicAXItoPWM:1.1.21 user.org:user:ultrasonicAXItoPWM:1.1.22 user.org:user:ultrasonicAXItoPWM:1.1.23 user.org:user:ultrasonicAXItoPWM:1.1.24 user.org:user:ultrasonicAXItoPWM:1.1.25 user.org:user:ultrasonicAXItoPWM:1.1.26 user.org:user:ultrasonicAXItoPWM:2.0.0 user.org:user:ultrasonicAXItoPWM:2.0.1 user.org:user:ultrasonicAXItoPWM:2.0.2 user.org:user:ultrasonicAXItoPWM:2.1.2 user.org:user:ultrasonicAXItoPWM:2.1.3 user.org:user:ultrasonicAXItoPWM:2.1.4 user.org:user:ultrasonicAXItoPWM:2.1.5} [ipx::current_core]
+set_property core_revision 1 [ipx::current_core]
+ipx::create_xgui_files [ipx::current_core]
+ipx::update_checksums [ipx::current_core]
+ipx::save_core [ipx::current_core]
+close_project -delete
+update_ip_catalog -rebuild -repo_path /home/niklas/xilinx/ip_repo/ultrasonicAXItoPWM_1.0
+report_ip_status -name ip_status 
+reset_run impl_2 -prev_step 
+launch_runs impl_2 -to_step write_bitstream -jobs 4
+wait_on_run impl_2
+reset_run impl_2 -prev_step 
+upgrade_ip -vlnv user.org:user:ultrasonicAXItoPWM:2.1.6 [get_ips  z_turn_ultrasonicAXItoPWM_0_1] -log ip_upgrade.log
+export_ip_user_files -of_objects [get_ips z_turn_ultrasonicAXItoPWM_0_1] -no_script -sync -force -quiet
+generate_target all [get_files  /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd]
+export_ip_user_files -of_objects [get_files /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd] -no_script -sync -force -quiet
+export_simulation -of_objects [get_files /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd] -directory /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files/sim_scripts -ip_user_files_dir /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files -ipstatic_source_dir /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files/ipstatic -lib_map_path [list {modelsim=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/modelsim} {questa=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/questa} {ies=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/ies} {vcs=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/vcs} {riviera=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/riviera}] -use_ip_compiled_libs -force -quiet
+report_ip_status -name ip_status 
+reset_run synth_2
+launch_runs impl_2 -to_step write_bitstream -jobs 4
+wait_on_run impl_2
+file copy -force /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.runs/impl_2/z_turn_wrapper.bit /home/niklas/ampttest.bit
+ipx::edit_ip_in_project -upgrade true -name ultrasonicShiftControl_v1_1_6_project -directory /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.tmp/ultrasonicShiftControl_v1_1_6_project /home/niklas/xilinx/ip_repo/ultrasonicShiftControl_1.0/component.xml
+update_compile_order -fileset sources_1
+set_property core_revision 2 [ipx::current_core]
+ipx::create_xgui_files [ipx::current_core]
+ipx::update_checksums [ipx::current_core]
+ipx::save_core [ipx::current_core]
+close_project -delete
+update_ip_catalog -rebuild -repo_path /home/niklas/xilinx/ip_repo/ultrasonicShiftControl_1.0
+report_ip_status -name ip_status 
+upgrade_ip -vlnv user.org:user:ultrasonicShiftControl:1.1.6 [get_ips  z_turn_ultrasonicShiftControl_0_0] -log ip_upgrade.log
+export_ip_user_files -of_objects [get_ips z_turn_ultrasonicShiftControl_0_0] -no_script -sync -force -quiet
+generate_target all [get_files  /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd]
+export_ip_user_files -of_objects [get_files /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd] -no_script -sync -force -quiet
+export_simulation -of_objects [get_files /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd] -directory /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files/sim_scripts -ip_user_files_dir /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files -ipstatic_source_dir /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files/ipstatic -lib_map_path [list {modelsim=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/modelsim} {questa=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/questa} {ies=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/ies} {vcs=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/vcs} {riviera=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/riviera}] -use_ip_compiled_libs -force -quiet
+report_ip_status -name ip_status 
+reset_run synth_2
+launch_runs impl_2 -to_step write_bitstream -jobs 4
+wait_on_run impl_2
+file copy -force /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.runs/impl_2/z_turn_wrapper.bit /home/niklas/ampttest.bit
+ipx::edit_ip_in_project -upgrade true -name ultrasonicShiftControl_v1_1_6_project -directory /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.tmp/ultrasonicShiftControl_v1_1_6_project /home/niklas/xilinx/ip_repo/ultrasonicShiftControl_1.0/component.xml
+update_compile_order -fileset sources_1
+set_property version 1.1.7 [ipx::current_core]
+set_property previous_version_for_upgrade {user.org:user:ultrasonicShiftControl:1.0 user.org:user:ultrasonicShiftControl:1.0.1 user.org:user:ultrasonicShiftControl:1.0.2 user.org:user:ultrasonicShiftControl:1.0.3 user.org:user:ultrasonicShiftControl:1.1.0 user.org:user:ultrasonicShiftControl:1.1.1 user.org:user:ultrasonicShiftControl:1.1.2 user.org:user:ultrasonicShiftControl:1.1.3 user.org:user:ultrasonicShiftControl:1.1.4 user.org:user:ultrasonicShiftControl:1.1.5 user.org:user:ultrasonicShiftControl:1.1.6} [ipx::current_core]
+set_property core_revision 1 [ipx::current_core]
+ipx::create_xgui_files [ipx::current_core]
+ipx::update_checksums [ipx::current_core]
+ipx::save_core [ipx::current_core]
+close_project -delete
+update_ip_catalog -rebuild -repo_path /home/niklas/xilinx/ip_repo/ultrasonicShiftControl_1.0
+report_ip_status -name ip_status 
+upgrade_ip -vlnv user.org:user:ultrasonicShiftControl:1.1.7 [get_ips  z_turn_ultrasonicShiftControl_0_0] -log ip_upgrade.log
+export_ip_user_files -of_objects [get_ips z_turn_ultrasonicShiftControl_0_0] -no_script -sync -force -quiet
+set_property synth_checkpoint_mode Singular [get_files  /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd]
+generate_target all [get_files  /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd]
+export_ip_user_files -of_objects [get_files /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd] -no_script -sync -force -quiet
+create_ip_run [get_files -of_objects [get_fileset sources_1] /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd]
+launch_runs -jobs 4 z_turn_synth_1
+export_simulation -of_objects [get_files /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd] -directory /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files/sim_scripts -ip_user_files_dir /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files -ipstatic_source_dir /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files/ipstatic -lib_map_path [list {modelsim=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/modelsim} {questa=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/questa} {ies=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/ies} {vcs=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/vcs} {riviera=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/riviera}] -use_ip_compiled_libs -force -quiet
+report_ip_status -name ip_status 
+reset_run synth_2
+launch_runs impl_2 -to_step write_bitstream -jobs 4
+wait_on_run impl_2
+file copy -force /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.runs/impl_2/z_turn_wrapper.bit /home/niklas/ampttest.bit
+ipx::edit_ip_in_project -upgrade true -name ultrasonicShiftControl_v1_1_7_project -directory /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.tmp/ultrasonicShiftControl_v1_1_7_project /home/niklas/xilinx/ip_repo/ultrasonicShiftControl_1.0/component.xml
+update_compile_order -fileset sources_1
+set_property core_revision 2 [ipx::current_core]
+ipx::create_xgui_files [ipx::current_core]
+ipx::update_checksums [ipx::current_core]
+ipx::save_core [ipx::current_core]
+close_project -delete
+update_ip_catalog -rebuild -repo_path /home/niklas/xilinx/ip_repo/ultrasonicShiftControl_1.0
+report_ip_status -name ip_status 
+upgrade_ip -srcset z_turn -vlnv user.org:user:ultrasonicShiftControl:1.1.7 [get_ips  z_turn_ultrasonicShiftControl_0_0] -log ip_upgrade.log
+export_ip_user_files -of_objects [get_ips z_turn_ultrasonicShiftControl_0_0] -no_script -sync -force -quiet
+generate_target all [get_files  /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd]
+export_ip_user_files -of_objects [get_files /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd] -no_script -sync -force -quiet
+reset_run z_turn_synth_1
+launch_runs -jobs 4 z_turn_synth_1
+export_simulation -of_objects [get_files /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd] -directory /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files/sim_scripts -ip_user_files_dir /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files -ipstatic_source_dir /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files/ipstatic -lib_map_path [list {modelsim=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/modelsim} {questa=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/questa} {ies=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/ies} {vcs=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/vcs} {riviera=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/riviera}] -use_ip_compiled_libs -force -quiet
+report_ip_status -name ip_status 
+reset_run synth_2
+launch_runs impl_2 -to_step write_bitstream -jobs 4
+wait_on_run impl_2
+file copy -force /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.runs/impl_2/z_turn_wrapper.bit /home/niklas/ampttest.bit
+ipx::edit_ip_in_project -upgrade true -name ultrasonicShiftControl_v1_1_7_project -directory /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.tmp/ultrasonicShiftControl_v1_1_7_project /home/niklas/xilinx/ip_repo/ultrasonicShiftControl_1.0/component.xml
+update_compile_order -fileset sources_1
+set_property version 1.1.8 [ipx::current_core]
+set_property previous_version_for_upgrade {user.org:user:ultrasonicShiftControl:1.0 user.org:user:ultrasonicShiftControl:1.0.1 user.org:user:ultrasonicShiftControl:1.0.2 user.org:user:ultrasonicShiftControl:1.0.3 user.org:user:ultrasonicShiftControl:1.1.0 user.org:user:ultrasonicShiftControl:1.1.1 user.org:user:ultrasonicShiftControl:1.1.2 user.org:user:ultrasonicShiftControl:1.1.3 user.org:user:ultrasonicShiftControl:1.1.4 user.org:user:ultrasonicShiftControl:1.1.5 user.org:user:ultrasonicShiftControl:1.1.6 user.org:user:ultrasonicShiftControl:1.1.7} [ipx::current_core]
+set_property core_revision 1 [ipx::current_core]
+ipx::create_xgui_files [ipx::current_core]
+ipx::update_checksums [ipx::current_core]
+ipx::save_core [ipx::current_core]
+close_project -delete
+update_ip_catalog -rebuild -repo_path /home/niklas/xilinx/ip_repo/ultrasonicShiftControl_1.0
+report_ip_status -name ip_status 
+upgrade_ip -srcset z_turn -vlnv user.org:user:ultrasonicShiftControl:1.1.8 [get_ips  z_turn_ultrasonicShiftControl_0_0] -log ip_upgrade.log
+export_ip_user_files -of_objects [get_ips z_turn_ultrasonicShiftControl_0_0] -no_script -sync -force -quiet
+generate_target all [get_files  /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd]
+export_ip_user_files -of_objects [get_files /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd] -no_script -sync -force -quiet
+reset_run z_turn_synth_1
+launch_runs -jobs 4 z_turn_synth_1
+export_simulation -of_objects [get_files /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd] -directory /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files/sim_scripts -ip_user_files_dir /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files -ipstatic_source_dir /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files/ipstatic -lib_map_path [list {modelsim=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/modelsim} {questa=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/questa} {ies=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/ies} {vcs=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/vcs} {riviera=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/riviera}] -use_ip_compiled_libs -force -quiet
+report_ip_status -name ip_status 
+reset_run synth_2
+launch_runs impl_2 -to_step write_bitstream -jobs 4
+wait_on_run impl_2
+file copy -force /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.runs/impl_2/z_turn_wrapper.bit /home/niklas/ampttest.bit
+ipx::edit_ip_in_project -upgrade true -name ultrasonicShiftControl_v1_1_8_project -directory /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.tmp/ultrasonicShiftControl_v1_1_8_project /home/niklas/xilinx/ip_repo/ultrasonicShiftControl_1.0/component.xml
+update_compile_order -fileset sources_1
+set_property version 1.1.9 [ipx::current_core]
+set_property previous_version_for_upgrade {user.org:user:ultrasonicShiftControl:1.0 user.org:user:ultrasonicShiftControl:1.0.1 user.org:user:ultrasonicShiftControl:1.0.2 user.org:user:ultrasonicShiftControl:1.0.3 user.org:user:ultrasonicShiftControl:1.1.0 user.org:user:ultrasonicShiftControl:1.1.1 user.org:user:ultrasonicShiftControl:1.1.2 user.org:user:ultrasonicShiftControl:1.1.3 user.org:user:ultrasonicShiftControl:1.1.4 user.org:user:ultrasonicShiftControl:1.1.5 user.org:user:ultrasonicShiftControl:1.1.6 user.org:user:ultrasonicShiftControl:1.1.7 user.org:user:ultrasonicShiftControl:1.1.8} [ipx::current_core]
+set_property core_revision 1 [ipx::current_core]
+ipx::create_xgui_files [ipx::current_core]
+ipx::update_checksums [ipx::current_core]
+ipx::save_core [ipx::current_core]
+close_project -delete
+update_ip_catalog -rebuild -repo_path /home/niklas/xilinx/ip_repo/ultrasonicShiftControl_1.0
+report_ip_status -name ip_status 
+upgrade_ip -srcset z_turn -vlnv user.org:user:ultrasonicShiftControl:1.1.9 [get_ips  z_turn_ultrasonicShiftControl_0_0] -log ip_upgrade.log
+export_ip_user_files -of_objects [get_ips z_turn_ultrasonicShiftControl_0_0] -no_script -sync -force -quiet
+generate_target all [get_files  /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd]
+export_ip_user_files -of_objects [get_files /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd] -no_script -sync -force -quiet
+reset_run z_turn_synth_1
+launch_runs -jobs 4 z_turn_synth_1
+export_simulation -of_objects [get_files /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd] -directory /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files/sim_scripts -ip_user_files_dir /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files -ipstatic_source_dir /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files/ipstatic -lib_map_path [list {modelsim=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/modelsim} {questa=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/questa} {ies=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/ies} {vcs=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/vcs} {riviera=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/riviera}] -use_ip_compiled_libs -force -quiet
+report_ip_status -name ip_status 
+reset_run synth_2
+launch_runs impl_2 -to_step write_bitstream -jobs 4
+wait_on_run impl_2
+file copy -force /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.runs/impl_2/z_turn_wrapper.bit /home/niklas/ampttest.bit
+ipx::edit_ip_in_project -upgrade true -name ultrasonicShiftControl_v1_1_9_project -directory /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.tmp/ultrasonicShiftControl_v1_1_9_project /home/niklas/xilinx/ip_repo/ultrasonicShiftControl_1.0/component.xml
+update_compile_order -fileset sources_1
+close_project
+ipx::edit_ip_in_project -upgrade true -name ultrasonicAXItoPWM_v2_1_6_project -directory /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.tmp/ultrasonicAXItoPWM_v2_1_6_project /home/niklas/xilinx/ip_repo/ultrasonicAXItoPWM_1.0/component.xml
+update_compile_order -fileset sources_1
+set_property version 2.1.7 [ipx::current_core]
+set_property previous_version_for_upgrade {user.org:user:ultrasonicAXItoPWM:1.0 user.org:user:ultrasonicAXItoPWM:1.1 user.org:user:ultrasonicAXItoPWM:1.1.2 user.org:user:ultrasonicAXItoPWM:1.1.3 user.org:user:ultrasonicAXItoPWM:1.1.4 user.org:user:ultrasonicAXItoPWM:1.1.5 user.org:user:ultrasonicAXItoPWM:1.1.6 user.org:user:ultrasonicAXItoPWM:1.1.7 user.org:user:ultrasonicAXItoPWM:1.1.8 user.org:user:ultrasonicAXItoPWM:1.1.9 user.org:user:ultrasonicAXItoPWM:1.1.10 user.org:user:ultrasonicAXItoPWM:1.1.11 user.org:user:ultrasonicAXItoPWM:1.1.12 user.org:user:ultrasonicAXItoPWM:1.1.13 user.org:user:ultrasonicAXItoPWM:1.1.14 user.org:user:ultrasonicAXItoPWM:1.1.15 user.org:user:ultrasonicAXItoPWM:1.1.16 user.org:user:ultrasonicAXItoPWM:1.1.17 user.org:user:ultrasonicAXItoPWM:1.1.18 user.org:user:ultrasonicAXItoPWM:1.1.19 user.org:user:ultrasonicAXItoPWM:1.1.20 user.org:user:ultrasonicAXItoPWM:1.1.21 user.org:user:ultrasonicAXItoPWM:1.1.22 user.org:user:ultrasonicAXItoPWM:1.1.23 user.org:user:ultrasonicAXItoPWM:1.1.24 user.org:user:ultrasonicAXItoPWM:1.1.25 user.org:user:ultrasonicAXItoPWM:1.1.26 user.org:user:ultrasonicAXItoPWM:2.0.0 user.org:user:ultrasonicAXItoPWM:2.0.1 user.org:user:ultrasonicAXItoPWM:2.0.2 user.org:user:ultrasonicAXItoPWM:2.1.2 user.org:user:ultrasonicAXItoPWM:2.1.3 user.org:user:ultrasonicAXItoPWM:2.1.4 user.org:user:ultrasonicAXItoPWM:2.1.5 user.org:user:ultrasonicAXItoPWM:2.1.6} [ipx::current_core]
+set_property core_revision 1 [ipx::current_core]
+ipx::create_xgui_files [ipx::current_core]
+ipx::update_checksums [ipx::current_core]
+ipx::save_core [ipx::current_core]
+close_project -delete
+update_ip_catalog -rebuild -repo_path /home/niklas/xilinx/ip_repo/ultrasonicAXItoPWM_1.0
+report_ip_status -name ip_status 
+upgrade_ip -srcset z_turn -vlnv user.org:user:ultrasonicAXItoPWM:2.1.7 [get_ips  z_turn_ultrasonicAXItoPWM_0_1] -log ip_upgrade.log
+export_ip_user_files -of_objects [get_ips z_turn_ultrasonicAXItoPWM_0_1] -no_script -sync -force -quiet
+generate_target all [get_files  /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd]
+export_ip_user_files -of_objects [get_files /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd] -no_script -sync -force -quiet
+reset_run z_turn_synth_1
+launch_runs -jobs 4 z_turn_synth_1
+export_simulation -of_objects [get_files /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd] -directory /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files/sim_scripts -ip_user_files_dir /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files -ipstatic_source_dir /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files/ipstatic -lib_map_path [list {modelsim=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/modelsim} {questa=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/questa} {ies=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/ies} {vcs=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/vcs} {riviera=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/riviera}] -use_ip_compiled_libs -force -quiet
+report_ip_status -name ip_status 
+reset_run synth_2
+launch_runs impl_2 -to_step write_bitstream -jobs 4
+wait_on_run impl_2
+file copy -force /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.runs/impl_2/z_turn_wrapper.bit /home/niklas/ampttest.bit
+ipx::edit_ip_in_project -upgrade true -name ultrasonicShiftControl_v1_1_9_project -directory /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.tmp/ultrasonicShiftControl_v1_1_9_project /home/niklas/xilinx/ip_repo/ultrasonicShiftControl_1.0/component.xml
+update_compile_order -fileset sources_1
+close_project
+ipx::edit_ip_in_project -upgrade true -name ultrasonicShiftControl_v1_1_9_project -directory /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.tmp/ultrasonicShiftControl_v1_1_9_project /home/niklas/xilinx/ip_repo/ultrasonicShiftControl_1.0/component.xml
+update_compile_order -fileset sources_1
+set_property version 1.1.91 [ipx::current_core]
+set_property previous_version_for_upgrade {user.org:user:ultrasonicShiftControl:1.0 user.org:user:ultrasonicShiftControl:1.0.1 user.org:user:ultrasonicShiftControl:1.0.2 user.org:user:ultrasonicShiftControl:1.0.3 user.org:user:ultrasonicShiftControl:1.1.0 user.org:user:ultrasonicShiftControl:1.1.1 user.org:user:ultrasonicShiftControl:1.1.2 user.org:user:ultrasonicShiftControl:1.1.3 user.org:user:ultrasonicShiftControl:1.1.4 user.org:user:ultrasonicShiftControl:1.1.5 user.org:user:ultrasonicShiftControl:1.1.6 user.org:user:ultrasonicShiftControl:1.1.7 user.org:user:ultrasonicShiftControl:1.1.8 user.org:user:ultrasonicShiftControl:1.1.9} [ipx::current_core]
+set_property core_revision 1 [ipx::current_core]
+ipx::create_xgui_files [ipx::current_core]
+ipx::update_checksums [ipx::current_core]
+ipx::save_core [ipx::current_core]
+close_project -delete
+update_ip_catalog -rebuild -repo_path /home/niklas/xilinx/ip_repo/ultrasonicShiftControl_1.0
+report_ip_status -name ip_status 
+upgrade_ip -srcset z_turn -vlnv user.org:user:ultrasonicShiftControl:1.1.91 [get_ips  z_turn_ultrasonicShiftControl_0_0] -log ip_upgrade.log
+export_ip_user_files -of_objects [get_ips z_turn_ultrasonicShiftControl_0_0] -no_script -sync -force -quiet
+generate_target all [get_files  /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd]
+export_ip_user_files -of_objects [get_files /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd] -no_script -sync -force -quiet
+reset_run z_turn_synth_1
+launch_runs -jobs 4 z_turn_synth_1
+export_simulation -of_objects [get_files /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd] -directory /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files/sim_scripts -ip_user_files_dir /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files -ipstatic_source_dir /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files/ipstatic -lib_map_path [list {modelsim=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/modelsim} {questa=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/questa} {ies=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/ies} {vcs=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/vcs} {riviera=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/riviera}] -use_ip_compiled_libs -force -quiet
+reset_run synth_2
+launch_runs impl_2 -to_step write_bitstream -jobs 4
+wait_on_run impl_2
+file copy -force /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.runs/impl_2/z_turn_wrapper.bit /home/niklas/ampttest.bit
+ipx::edit_ip_in_project -upgrade true -name ultrasonicShiftControl_v1_1_91_project -directory /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.tmp/ultrasonicShiftControl_v1_1_91_project /home/niklas/xilinx/ip_repo/ultrasonicShiftControl_1.0/component.xml
+update_compile_order -fileset sources_1
+set_property version 1.1.92 [ipx::current_core]
+set_property previous_version_for_upgrade {user.org:user:ultrasonicShiftControl:1.0 user.org:user:ultrasonicShiftControl:1.0.1 user.org:user:ultrasonicShiftControl:1.0.2 user.org:user:ultrasonicShiftControl:1.0.3 user.org:user:ultrasonicShiftControl:1.1.0 user.org:user:ultrasonicShiftControl:1.1.1 user.org:user:ultrasonicShiftControl:1.1.2 user.org:user:ultrasonicShiftControl:1.1.3 user.org:user:ultrasonicShiftControl:1.1.4 user.org:user:ultrasonicShiftControl:1.1.5 user.org:user:ultrasonicShiftControl:1.1.6 user.org:user:ultrasonicShiftControl:1.1.7 user.org:user:ultrasonicShiftControl:1.1.8 user.org:user:ultrasonicShiftControl:1.1.9 user.org:user:ultrasonicShiftControl:1.1.91} [ipx::current_core]
+set_property core_revision 1 [ipx::current_core]
+ipx::create_xgui_files [ipx::current_core]
+ipx::update_checksums [ipx::current_core]
+ipx::save_core [ipx::current_core]
+close_project -delete
+update_ip_catalog -rebuild -repo_path /home/niklas/xilinx/ip_repo/ultrasonicShiftControl_1.0
+report_ip_status -name ip_status 
+upgrade_ip -srcset z_turn -vlnv user.org:user:ultrasonicShiftControl:1.1.92 [get_ips  z_turn_ultrasonicShiftControl_0_0] -log ip_upgrade.log
+export_ip_user_files -of_objects [get_ips z_turn_ultrasonicShiftControl_0_0] -no_script -sync -force -quiet
+generate_target all [get_files  /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd]
+export_ip_user_files -of_objects [get_files /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd] -no_script -sync -force -quiet
+reset_run z_turn_synth_1
+launch_runs -jobs 4 z_turn_synth_1
+export_simulation -of_objects [get_files /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd] -directory /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files/sim_scripts -ip_user_files_dir /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files -ipstatic_source_dir /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files/ipstatic -lib_map_path [list {modelsim=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/modelsim} {questa=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/questa} {ies=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/ies} {vcs=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/vcs} {riviera=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/riviera}] -use_ip_compiled_libs -force -quiet
+reset_run synth_2
+launch_runs impl_2 -to_step write_bitstream -jobs 4
+wait_on_run impl_2
+file copy -force /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.runs/impl_2/z_turn_wrapper.bit /home/niklas/ampttest.bit
+ipx::edit_ip_in_project -upgrade true -name ultrasonicAXItoPWM_v2_1_7_project -directory /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.tmp/ultrasonicAXItoPWM_v2_1_7_project /home/niklas/xilinx/ip_repo/ultrasonicAXItoPWM_1.0/component.xml
+update_compile_order -fileset sources_1
+set_property version 2.1.8 [ipx::current_core]
+set_property previous_version_for_upgrade {user.org:user:ultrasonicAXItoPWM:1.0 user.org:user:ultrasonicAXItoPWM:1.1 user.org:user:ultrasonicAXItoPWM:1.1.2 user.org:user:ultrasonicAXItoPWM:1.1.3 user.org:user:ultrasonicAXItoPWM:1.1.4 user.org:user:ultrasonicAXItoPWM:1.1.5 user.org:user:ultrasonicAXItoPWM:1.1.6 user.org:user:ultrasonicAXItoPWM:1.1.7 user.org:user:ultrasonicAXItoPWM:1.1.8 user.org:user:ultrasonicAXItoPWM:1.1.9 user.org:user:ultrasonicAXItoPWM:1.1.10 user.org:user:ultrasonicAXItoPWM:1.1.11 user.org:user:ultrasonicAXItoPWM:1.1.12 user.org:user:ultrasonicAXItoPWM:1.1.13 user.org:user:ultrasonicAXItoPWM:1.1.14 user.org:user:ultrasonicAXItoPWM:1.1.15 user.org:user:ultrasonicAXItoPWM:1.1.16 user.org:user:ultrasonicAXItoPWM:1.1.17 user.org:user:ultrasonicAXItoPWM:1.1.18 user.org:user:ultrasonicAXItoPWM:1.1.19 user.org:user:ultrasonicAXItoPWM:1.1.20 user.org:user:ultrasonicAXItoPWM:1.1.21 user.org:user:ultrasonicAXItoPWM:1.1.22 user.org:user:ultrasonicAXItoPWM:1.1.23 user.org:user:ultrasonicAXItoPWM:1.1.24 user.org:user:ultrasonicAXItoPWM:1.1.25 user.org:user:ultrasonicAXItoPWM:1.1.26 user.org:user:ultrasonicAXItoPWM:2.0.0 user.org:user:ultrasonicAXItoPWM:2.0.1 user.org:user:ultrasonicAXItoPWM:2.0.2 user.org:user:ultrasonicAXItoPWM:2.1.2 user.org:user:ultrasonicAXItoPWM:2.1.3 user.org:user:ultrasonicAXItoPWM:2.1.4 user.org:user:ultrasonicAXItoPWM:2.1.5 user.org:user:ultrasonicAXItoPWM:2.1.6 user.org:user:ultrasonicAXItoPWM:2.1.7} [ipx::current_core]
+set_property core_revision 1 [ipx::current_core]
+ipx::create_xgui_files [ipx::current_core]
+ipx::update_checksums [ipx::current_core]
+ipx::save_core [ipx::current_core]
+close_project -delete
+update_ip_catalog -rebuild -repo_path /home/niklas/xilinx/ip_repo/ultrasonicAXItoPWM_1.0
+report_ip_status -name ip_status 
+upgrade_ip -srcset z_turn -vlnv user.org:user:ultrasonicAXItoPWM:2.1.8 [get_ips  z_turn_ultrasonicAXItoPWM_0_1] -log ip_upgrade.log
+export_ip_user_files -of_objects [get_ips z_turn_ultrasonicAXItoPWM_0_1] -no_script -sync -force -quiet
+generate_target all [get_files  /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd]
+export_ip_user_files -of_objects [get_files /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd] -no_script -sync -force -quiet
+reset_run z_turn_synth_1
+launch_runs -jobs 4 z_turn_synth_1
+export_simulation -of_objects [get_files /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd] -directory /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files/sim_scripts -ip_user_files_dir /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files -ipstatic_source_dir /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files/ipstatic -lib_map_path [list {modelsim=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/modelsim} {questa=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/questa} {ies=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/ies} {vcs=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/vcs} {riviera=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/riviera}] -use_ip_compiled_libs -force -quiet
+report_ip_status -name ip_status 
+reset_run synth_2
+launch_runs impl_2 -to_step write_bitstream -jobs 4
+wait_on_run impl_2
+file copy -force /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.runs/impl_2/z_turn_wrapper.bit /home/niklas/blinktest.bit
+ipx::edit_ip_in_project -upgrade true -name ultrasonicShiftControl_v1_1_92_project -directory /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.tmp/ultrasonicShiftControl_v1_1_92_project /home/niklas/xilinx/ip_repo/ultrasonicShiftControl_1.0/component.xml
+update_compile_order -fileset sources_1
+close_project
+ipx::edit_ip_in_project -upgrade true -name ultrasonicAXItoPWM_v2_1_8_project -directory /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.tmp/ultrasonicAXItoPWM_v2_1_8_project /home/niklas/xilinx/ip_repo/ultrasonicAXItoPWM_1.0/component.xml
+update_compile_order -fileset sources_1
+set_property version 2.1.9 [ipx::current_core]
+set_property previous_version_for_upgrade {user.org:user:ultrasonicAXItoPWM:1.0 user.org:user:ultrasonicAXItoPWM:1.1 user.org:user:ultrasonicAXItoPWM:1.1.2 user.org:user:ultrasonicAXItoPWM:1.1.3 user.org:user:ultrasonicAXItoPWM:1.1.4 user.org:user:ultrasonicAXItoPWM:1.1.5 user.org:user:ultrasonicAXItoPWM:1.1.6 user.org:user:ultrasonicAXItoPWM:1.1.7 user.org:user:ultrasonicAXItoPWM:1.1.8 user.org:user:ultrasonicAXItoPWM:1.1.9 user.org:user:ultrasonicAXItoPWM:1.1.10 user.org:user:ultrasonicAXItoPWM:1.1.11 user.org:user:ultrasonicAXItoPWM:1.1.12 user.org:user:ultrasonicAXItoPWM:1.1.13 user.org:user:ultrasonicAXItoPWM:1.1.14 user.org:user:ultrasonicAXItoPWM:1.1.15 user.org:user:ultrasonicAXItoPWM:1.1.16 user.org:user:ultrasonicAXItoPWM:1.1.17 user.org:user:ultrasonicAXItoPWM:1.1.18 user.org:user:ultrasonicAXItoPWM:1.1.19 user.org:user:ultrasonicAXItoPWM:1.1.20 user.org:user:ultrasonicAXItoPWM:1.1.21 user.org:user:ultrasonicAXItoPWM:1.1.22 user.org:user:ultrasonicAXItoPWM:1.1.23 user.org:user:ultrasonicAXItoPWM:1.1.24 user.org:user:ultrasonicAXItoPWM:1.1.25 user.org:user:ultrasonicAXItoPWM:1.1.26 user.org:user:ultrasonicAXItoPWM:2.0.0 user.org:user:ultrasonicAXItoPWM:2.0.1 user.org:user:ultrasonicAXItoPWM:2.0.2 user.org:user:ultrasonicAXItoPWM:2.1.2 user.org:user:ultrasonicAXItoPWM:2.1.3 user.org:user:ultrasonicAXItoPWM:2.1.4 user.org:user:ultrasonicAXItoPWM:2.1.5 user.org:user:ultrasonicAXItoPWM:2.1.6 user.org:user:ultrasonicAXItoPWM:2.1.7 user.org:user:ultrasonicAXItoPWM:2.1.8} [ipx::current_core]
+set_property core_revision 1 [ipx::current_core]
+ipx::create_xgui_files [ipx::current_core]
+ipx::update_checksums [ipx::current_core]
+ipx::save_core [ipx::current_core]
+close_project -delete
+update_ip_catalog -rebuild -repo_path /home/niklas/xilinx/ip_repo/ultrasonicAXItoPWM_1.0
+startgroup
+set_property -dict [list CONFIG.CLKOUT1_REQUESTED_OUT_FREQ {100} CONFIG.MMCM_DIVCLK_DIVIDE {1} CONFIG.MMCM_CLKFBOUT_MULT_F {9} CONFIG.MMCM_CLKIN1_PERIOD {10.000} CONFIG.MMCM_CLKIN2_PERIOD {10.000} CONFIG.MMCM_CLKOUT0_DIVIDE_F {9} CONFIG.CLKOUT1_JITTER {137.681} CONFIG.CLKOUT1_PHASE_ERROR {105.461}] [get_bd_cells clk_wiz_0]
+endgroup
+report_ip_status -name ip_status 
+upgrade_ip -srcset z_turn -vlnv user.org:user:ultrasonicAXItoPWM:2.1.9 [get_ips  z_turn_ultrasonicAXItoPWM_0_1] -log ip_upgrade.log
+export_ip_user_files -of_objects [get_ips z_turn_ultrasonicAXItoPWM_0_1] -no_script -sync -force -quiet
+generate_target all [get_files  /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd]
+export_ip_user_files -of_objects [get_files /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd] -no_script -sync -force -quiet
+reset_run z_turn_synth_1
+launch_runs -jobs 4 z_turn_synth_1
+export_simulation -of_objects [get_files /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd] -directory /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files/sim_scripts -ip_user_files_dir /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files -ipstatic_source_dir /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files/ipstatic -lib_map_path [list {modelsim=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/modelsim} {questa=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/questa} {ies=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/ies} {vcs=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/vcs} {riviera=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/riviera}] -use_ip_compiled_libs -force -quiet
+reset_run synth_2
+launch_runs impl_2 -jobs 4
+wait_on_run impl_2
+launch_runs impl_2 -to_step write_bitstream -jobs 4
+wait_on_run impl_2
+file copy -force /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.runs/impl_2/z_turn_wrapper.bit /home/niklas/blinktest.bit
+startgroup
+set_property -dict [list CONFIG.CLKOUT1_REQUESTED_OUT_FREQ {320} CONFIG.MMCM_DIVCLK_DIVIDE {5} CONFIG.MMCM_CLKFBOUT_MULT_F {48} CONFIG.MMCM_CLKOUT0_DIVIDE_F {3} CONFIG.CLKOUT1_JITTER {213.791} CONFIG.CLKOUT1_PHASE_ERROR {301.601}] [get_bd_cells clk_wiz_0]
+endgroup
+ipx::edit_ip_in_project -upgrade true -name ultrasonicAXItoPWM_v2_1_9_project -directory /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.tmp/ultrasonicAXItoPWM_v2_1_9_project /home/niklas/xilinx/ip_repo/ultrasonicAXItoPWM_1.0/component.xml
+update_compile_order -fileset sources_1
+set_property version 2.1.91 [ipx::current_core]
+set_property previous_version_for_upgrade {user.org:user:ultrasonicAXItoPWM:1.0 user.org:user:ultrasonicAXItoPWM:1.1 user.org:user:ultrasonicAXItoPWM:1.1.2 user.org:user:ultrasonicAXItoPWM:1.1.3 user.org:user:ultrasonicAXItoPWM:1.1.4 user.org:user:ultrasonicAXItoPWM:1.1.5 user.org:user:ultrasonicAXItoPWM:1.1.6 user.org:user:ultrasonicAXItoPWM:1.1.7 user.org:user:ultrasonicAXItoPWM:1.1.8 user.org:user:ultrasonicAXItoPWM:1.1.9 user.org:user:ultrasonicAXItoPWM:1.1.10 user.org:user:ultrasonicAXItoPWM:1.1.11 user.org:user:ultrasonicAXItoPWM:1.1.12 user.org:user:ultrasonicAXItoPWM:1.1.13 user.org:user:ultrasonicAXItoPWM:1.1.14 user.org:user:ultrasonicAXItoPWM:1.1.15 user.org:user:ultrasonicAXItoPWM:1.1.16 user.org:user:ultrasonicAXItoPWM:1.1.17 user.org:user:ultrasonicAXItoPWM:1.1.18 user.org:user:ultrasonicAXItoPWM:1.1.19 user.org:user:ultrasonicAXItoPWM:1.1.20 user.org:user:ultrasonicAXItoPWM:1.1.21 user.org:user:ultrasonicAXItoPWM:1.1.22 user.org:user:ultrasonicAXItoPWM:1.1.23 user.org:user:ultrasonicAXItoPWM:1.1.24 user.org:user:ultrasonicAXItoPWM:1.1.25 user.org:user:ultrasonicAXItoPWM:1.1.26 user.org:user:ultrasonicAXItoPWM:2.0.0 user.org:user:ultrasonicAXItoPWM:2.0.1 user.org:user:ultrasonicAXItoPWM:2.0.2 user.org:user:ultrasonicAXItoPWM:2.1.2 user.org:user:ultrasonicAXItoPWM:2.1.3 user.org:user:ultrasonicAXItoPWM:2.1.4 user.org:user:ultrasonicAXItoPWM:2.1.5 user.org:user:ultrasonicAXItoPWM:2.1.6 user.org:user:ultrasonicAXItoPWM:2.1.7 user.org:user:ultrasonicAXItoPWM:2.1.8 user.org:user:ultrasonicAXItoPWM:2.1.9} [ipx::current_core]
+set_property core_revision 1 [ipx::current_core]
+ipx::create_xgui_files [ipx::current_core]
+ipx::update_checksums [ipx::current_core]
+ipx::save_core [ipx::current_core]
+close_project -delete
+update_ip_catalog -rebuild -repo_path /home/niklas/xilinx/ip_repo/ultrasonicAXItoPWM_1.0
+report_ip_status -name ip_status 
+upgrade_ip -srcset z_turn -vlnv user.org:user:ultrasonicAXItoPWM:2.1.91 [get_ips  z_turn_ultrasonicAXItoPWM_0_1] -log ip_upgrade.log
+export_ip_user_files -of_objects [get_ips z_turn_ultrasonicAXItoPWM_0_1] -no_script -sync -force -quiet
+generate_target all [get_files  /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd]
+export_ip_user_files -of_objects [get_files /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd] -no_script -sync -force -quiet
+reset_run z_turn_synth_1
+launch_runs -jobs 4 z_turn_synth_1
+export_simulation -of_objects [get_files /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd] -directory /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files/sim_scripts -ip_user_files_dir /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files -ipstatic_source_dir /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files/ipstatic -lib_map_path [list {modelsim=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/modelsim} {questa=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/questa} {ies=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/ies} {vcs=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/vcs} {riviera=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/riviera}] -use_ip_compiled_libs -force -quiet
+report_ip_status -name ip_status 
+reset_run synth_2
+launch_runs impl_2 -to_step write_bitstream -jobs 4
+wait_on_run impl_2
+file copy -force /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.runs/impl_2/z_turn_wrapper.bit /home/niklas/blinktest.bit
+startgroup
+set_property -dict [list CONFIG.CLKOUT1_REQUESTED_OUT_FREQ {400} CONFIG.MMCM_DIVCLK_DIVIDE {1} CONFIG.MMCM_CLKFBOUT_MULT_F {12} CONFIG.CLKOUT1_JITTER {90.074} CONFIG.CLKOUT1_PHASE_ERROR {87.180}] [get_bd_cells clk_wiz_0]
+endgroup
+save_bd_design
+reset_run synth_2
+reset_run z_turn_synth_1
+launch_runs impl_2 -to_step write_bitstream -jobs 4
+wait_on_run impl_2
+file copy -force /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.runs/impl_2/z_turn_wrapper.bit /home/niklas/blinktest.bit
+ipx::edit_ip_in_project -upgrade true -name ultrasonicShiftControl_v1_1_92_project -directory /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.tmp/ultrasonicShiftControl_v1_1_92_project /home/niklas/xilinx/ip_repo/ultrasonicShiftControl_1.0/component.xml
+update_compile_order -fileset sources_1
+set_property version 1.1.93 [ipx::current_core]
+set_property previous_version_for_upgrade {user.org:user:ultrasonicShiftControl:1.0 user.org:user:ultrasonicShiftControl:1.0.1 user.org:user:ultrasonicShiftControl:1.0.2 user.org:user:ultrasonicShiftControl:1.0.3 user.org:user:ultrasonicShiftControl:1.1.0 user.org:user:ultrasonicShiftControl:1.1.1 user.org:user:ultrasonicShiftControl:1.1.2 user.org:user:ultrasonicShiftControl:1.1.3 user.org:user:ultrasonicShiftControl:1.1.4 user.org:user:ultrasonicShiftControl:1.1.5 user.org:user:ultrasonicShiftControl:1.1.6 user.org:user:ultrasonicShiftControl:1.1.7 user.org:user:ultrasonicShiftControl:1.1.8 user.org:user:ultrasonicShiftControl:1.1.9 user.org:user:ultrasonicShiftControl:1.1.91 user.org:user:ultrasonicShiftControl:1.1.92} [ipx::current_core]
+set_property core_revision 1 [ipx::current_core]
+ipx::create_xgui_files [ipx::current_core]
+ipx::update_checksums [ipx::current_core]
+ipx::save_core [ipx::current_core]
+close_project -delete
+update_ip_catalog -rebuild -repo_path /home/niklas/xilinx/ip_repo/ultrasonicShiftControl_1.0
+report_ip_status -name ip_status 
+upgrade_ip -srcset z_turn -vlnv user.org:user:ultrasonicShiftControl:1.1.93 [get_ips  z_turn_ultrasonicShiftControl_0_0] -log ip_upgrade.log
+export_ip_user_files -of_objects [get_ips z_turn_ultrasonicShiftControl_0_0] -no_script -sync -force -quiet
+generate_target all [get_files  /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd]
+export_ip_user_files -of_objects [get_files /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd] -no_script -sync -force -quiet
+reset_run z_turn_synth_1
+launch_runs -jobs 4 z_turn_synth_1
+export_simulation -of_objects [get_files /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.srcs/sources_1/bd/z_turn/z_turn.bd] -directory /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files/sim_scripts -ip_user_files_dir /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files -ipstatic_source_dir /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.ip_user_files/ipstatic -lib_map_path [list {modelsim=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/modelsim} {questa=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/questa} {ies=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/ies} {vcs=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/vcs} {riviera=/home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.cache/compile_simlib/riviera}] -use_ip_compiled_libs -force -quiet
+report_ip_status -name ip_status 
+reset_run synth_2
+launch_runs impl_2 -to_step write_bitstream -jobs 4
+wait_on_run impl_2
+file copy -force /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.runs/impl_2/z_turn_wrapper.bit /home/niklas/blinktest.bit
+startgroup
+set_property -dict [list CONFIG.CLKOUT1_REQUESTED_OUT_FREQ {327.680} CONFIG.MMCM_DIVCLK_DIVIDE {5} CONFIG.MMCM_CLKFBOUT_MULT_F {49} CONFIG.CLKOUT1_JITTER {209.443} CONFIG.CLKOUT1_PHASE_ERROR {301.056}] [get_bd_cells clk_wiz_0]
+endgroup
+save_bd_design
+reset_run synth_2
+reset_run z_turn_synth_1
+launch_runs impl_2 -to_step write_bitstream -jobs 4
+wait_on_run impl_2
+file copy -force /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.runs/impl_2/z_turn_wrapper.bit /home/niklas/blinktest.bit
+ipx::edit_ip_in_project -upgrade true -name ultrasonicShiftControl_v1_1_93_project -directory /home/niklas/xilinx/ultrasonic_7020_output/ultrasonic_7020.tmp/ultrasonicShiftControl_v1_1_93_project /home/niklas/xilinx/ip_repo/ultrasonicShiftControl_1.0/component.xml
+update_compile_order -fileset sources_1
+set_property version 1.1.94 [ipx::current_core]
+set_property previous_version_for_upgrade {user.org:user:ultrasonicShiftControl:1.0 user.org:user:ultrasonicShiftControl:1.0.1 user.org:user:ultrasonicShiftControl:1.0.2 user.org:user:ultrasonicShiftControl:1.0.3 user.org:user:ultrasonicShiftControl:1.1.0 user.org:user:ultrasonicShiftControl:1.1.1 user.org:user:ultrasonicShiftControl:1.1.2 user.org:user:ultrasonicShiftControl:1.1.3 user.org:user:ultrasonicShiftControl:1.1.4 user.org:user:ultrasonicShiftControl:1.1.5 user.org:user:ultrasonicShiftControl:1.1.6 user.org:user:ultrasonicShiftControl:1.1.7 user.org:user:ultrasonicShiftControl:1.1.8 user.org:user:ultrasonicShiftControl:1.1.9 user.org:user:ultrasonicShiftControl:1.1.91 user.org:user:ultrasonicShiftControl:1.1.92 user.org:user:ultrasonicShiftControl:1.1.93} [ipx::current_core]
+set_property core_revision 1 [ipx::current_core]
+ipx::create_xgui_files [ipx::current_core]
+ipx::update_checksums [ipx::current_core]
+ipx::save_core [ipx::current_core]
+close_project -delete
