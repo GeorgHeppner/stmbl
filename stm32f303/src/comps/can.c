@@ -14,16 +14,23 @@ HAL_PIN(enable);
 HAL_PIN(pos_in);
 HAL_PIN(vel_in);
 
+
+
 #define TX_ADDRESS  0x0001
-#define RX_ADDRESS  0x0006
+#define RX_ADDRESS  0x0007
 
 uint8_t errors = 0b00000000; // 0: motor disconnected / 1: motor short / 3: position error / 3: overcurrent / 4: undervoltage / 5: overvoltage / 6: CAN timeout / 7: hardfault
 uint8_t current = 0;         // motor current in 1/10 A (100mA / LSB)
 
 uint8_t mode = 0; //0 = pos, 1 = vel
+uint8_t indexPin = 0; //0 = pos, 1 = vel
 
 float pos = 0, vel = 0, pos_in = 0, vel_in = 0;
 uint8_t enable = 0;
+
+int8_t homing = 0;
+
+float homingOffset = 0;
 
 typedef struct  {
   unsigned int   id;                    /* 29 bit identifier */
@@ -89,6 +96,12 @@ static void MX_CAN_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
+  GPIO_InitStruct.Pin = GPIO_PIN_10;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
   hcan.Instance = CAN;
   hcan.Init.Prescaler = 6;
   hcan.Init.Mode = CAN_MODE_NORMAL;
@@ -153,6 +166,13 @@ void CAN_rdMsg (uint32_t ctrl, CAN_msg *msg)  {
   CAN->RF0R |= CAN_RF0R_RFOM0;             /* Release FIFO 0 output mailbox */
 
   if (msg->len == 8) {
+    if ((msg->data[0] >> 4)  & 0x01) { //arm motor
+      enable = 1;
+    }
+    else {
+      enable = 0;
+    }
+
     if ((msg->data[0])  & 0x01) { //set position
       uint8_t b[] = {msg->data[4], msg->data[3], msg->data[2], msg->data[1]};
       memcpy(&pos, &b, sizeof(pos));
@@ -181,21 +201,15 @@ void CAN_rdMsg (uint32_t ctrl, CAN_msg *msg)  {
       printf("polling...\n");
     }
 
-    /*if ((msg->data[0] >> 2)  & 0x01)) { //home joint
-      if ((msg->data[0] >> 3)  & 0x01)) { //set direction
-
+    if ((msg->data[0] >> 2)  & 0x01) { //home joint
+      if ((msg->data[0] >> 3)  & 0x01) { //set direction
+        homing = 1;
       }
       else {
-
+        homing = -1;
       }
-    }*/
+    }
 
-    if ((msg->data[0] >> 4)  & 0x01) { //arm motor
-      enable = 1;
-    }
-    else {
-      enable = 0;
-    }
 
     if ((msg->data[0] >> 5)  & 0x01) { //get position
       uint8_t b[] = {0,0,0,0};
@@ -280,8 +294,52 @@ static void nrt_func(float period, volatile void * ctx_ptr, volatile hal_pin_ins
     CAN->RF0R |= CAN_RF0R_RFOM0;            /* release FIFO */
   }
 
-  PIN(pos) = pos;
-  PIN(vel) = vel;
+  if (homing == 1) {
+    hal_parse("ypid0.pos_p = 0");
+    hal_parse("ypid0.vel_ext_cmd = 1");
+  }
+
+  else if (homing == -1) {
+    hal_parse("ypid0.pos_p = 0");
+    hal_parse("ypid0.vel_ext_cmd = -1");
+  }
+
+  else if (homing == 2) {
+      vel = 0;
+      pos = 0;
+      PIN(vel) = vel;
+      PIN(pos) = homingOffset;
+      if (mode == 0) {
+        hal_parse("ypid0.pos_p = 10");
+        hal_parse("ypid0.vel_ext_cmd =  = vel1.vel");
+      }
+
+      else if (mode == 1) {
+        hal_parse("ypid0.pos_p = 0");
+        hal_parse("ypid0.vel_ext_cmd = can0.vel");
+      }
+      homing = 0;
+    }
+}
+
+
+static void rt_func(float period, volatile void * ctx_ptr, volatile hal_pin_inst_t * pin_ptr){
+  // struct enc_ctx_t * ctx = (struct enc_ctx_t *)ctx_ptr;
+  struct can_pin_ctx_t * pins = (struct can_pin_ctx_t *)pin_ptr;
+  if (homing != 0) {
+    indexPin = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_10);
+    if (indexPin) {
+      PIN(vel) = 0;
+      homing = 2;
+      homingOffset = pos_in;
+    }
+  }
+
+  else {
+    PIN(pos) = pos + homingOffset;
+    PIN(vel) = vel;
+  }
+
   PIN(enable) = enable;
 
   pos_in = PIN(pos_in);
@@ -291,7 +349,7 @@ static void nrt_func(float period, volatile void * ctx_ptr, volatile hal_pin_ins
 hal_comp_t can_comp_struct = {
   .name = "can",
   .nrt = nrt_func,
-  .rt = 0,//rt_func,
+  .rt = rt_func,
   .frt = 0,
   .nrt_init = nrt_init,
   .rt_start = 0,
