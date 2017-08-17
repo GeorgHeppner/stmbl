@@ -116,21 +116,24 @@ static void rt_func(float period, volatile void * ctx_ptr, volatile hal_pin_inst
   DMA1->IFCR = DMA_IFCR_CTCIF1;
   DMA2->IFCR = DMA_IFCR_CTCIF5;
 
-  // uint32_t a12 = adc_12_buf[0] + adc_12_buf[1] + adc_12_buf[2] + adc_12_buf[3] + adc_12_buf[4];
-  // uint32_t a34 = adc_34_buf[0] + adc_34_buf[1] + adc_34_buf[2] + adc_34_buf[3] + adc_34_buf[4];
-  //
-  // if(ctx->u_offset == 0){
-  //   ctx->w_offset = AMP((float)(a12 & 0xFFFF) / 5.0, SHUNT_GAIN);
-  //   ctx->u_offset = AMP((float)(a12 >> 16) / 5.0, SHUNT_GAIN);
-  //   ctx->v_offset = AMP((float)(a34 & 0xFFFF) / 5.0, SHUNT_GAIN);
-  // }
+  uint32_t a12 = adc_12_buf[0] + adc_12_buf[1] + adc_12_buf[2] + adc_12_buf[3] + adc_12_buf[4];
+  uint32_t a34 = adc_34_buf[0] + adc_34_buf[1] + adc_34_buf[2] + adc_34_buf[3] + adc_34_buf[4];
 
-  // PIN(iw) = -AMP((float)(a12 & 0xFFFF) / 5.0, SHUNT_GAIN) + ctx->w_offset; // 1u
-  // PIN(iu) = -AMP((float)(a12 >> 16) / 5.0, SHUNT_GAIN) + ctx->u_offset;
-  // PIN(iv) = -AMP((float)(a34 & 0xFFFF) / 5.0, SHUNT_GAIN) + ctx->v_offset;
-  // PIN(w) = VOLT(adc_12_buf[5] & 0xFFFF) * 0.05 + PIN(w) * 0.95; // 0.6u
-  // PIN(v) = VOLT(adc_12_buf[5] >> 16) * 0.05 + PIN(v) * 0.95;
-  // PIN(u) = VOLT(adc_34_buf[5] & 0xFFFF) * 0.05 + PIN(u) * 0.95;
+  if(ctx->u_offset == 0){
+    ctx->w_offset = AMP((float)(a12 & 0xFFFF) / 5.0, SHUNT_GAIN);
+    ctx->u_offset = AMP((float)(a12 >> 16) / 5.0, SHUNT_GAIN);
+    ctx->v_offset = AMP((float)(a34 & 0xFFFF) / 5.0, SHUNT_GAIN);
+  }
+
+  //PIN(iw) = PIN(iu)-PIN(iv);//-AMP((float)(a12 & 0xFFFF) / 5.0, SHUNT_GAIN) + ctx->w_offset; // 1u
+  PIN(iu) = -AMP((float)(a12 >> 16) / 5.0, SHUNT_GAIN) + ctx->u_offset;
+  PIN(iv) = -AMP((float)(a34 & 0xFFFF) / 5.0, SHUNT_GAIN) + ctx->v_offset;
+
+  PIN(iw) = PIN(iu)-PIN(iv);
+
+  PIN(w) = VOLT(adc_12_buf[5] & 0xFFFF) * 0.05 + PIN(w) * 0.95; // 0.6u
+  PIN(v) = VOLT(adc_12_buf[5] >> 16) * 0.05 + PIN(v) * 0.95;
+  PIN(u) = VOLT(adc_34_buf[5] & 0xFFFF) * 0.05 + PIN(u) * 0.95;
   PIN(udc) = VOLT(adc_34_buf[5] >> 16) * 0.05 + PIN(udc) * 0.95;
 
   // PIN(hv_temp) = r2temp(HV_R(ADC(adc_34_buf[0] >> 16))) * 0.01 + PIN(hv_temp) * 0.99; // 5.5u

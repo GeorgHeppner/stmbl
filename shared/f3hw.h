@@ -19,6 +19,9 @@
 
 #define VDIVUP 56000.0//HV div pullup R1,R12
 #define VDIVDOWN 2000.0//HV div pulldown R2,R9
+#define SHUNT 0.003//shunt
+#define SHUNT_PULLUP 5100.0
+#define SHUNT_SERIE 100.0
 
 #define LED_Pin GPIO_PIN_0
 #define LED_GPIO_Port GPIOA

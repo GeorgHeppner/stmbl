@@ -14,18 +14,29 @@ HAL_PIN(enable);
 HAL_PIN(pos_in);
 HAL_PIN(vel_in);
 
+HAL_PIN(saturated);
+HAL_PIN(current);
+
+HAL_PIN(tx_pos);
+HAL_PIN(rx_pos);
+HAL_PIN(tx_current);
 
 
 #define TX_ADDRESS  0x0001
 #define RX_ADDRESS  0x0007
 
+#define MAX_SATURATED 0.2
+#define MAX_CURRENT   30       // max. motor current in 1/10 A
+
 uint8_t errors = 0b00000000; // 0: motor disconnected / 1: motor short / 3: position error / 3: overcurrent / 4: undervoltage / 5: overvoltage / 6: CAN timeout / 7: hardfault
 uint8_t current = 0;         // motor current in 1/10 A (100mA / LSB)
 
+uint8_t running = 0;
 uint8_t mode = 0; //0 = pos, 1 = vel
 uint8_t indexPin = 0; //0 = pos, 1 = vel
 
 float pos = 0, vel = 0, pos_in = 0, vel_in = 0;
+float txPos = 0;
 uint8_t enable = 0;
 
 int8_t homing = 0;
@@ -213,7 +224,7 @@ void CAN_rdMsg (uint32_t ctrl, CAN_msg *msg)  {
 
     if ((msg->data[0] >> 5)  & 0x01) { //get position
       uint8_t b[] = {0,0,0,0};
-      memcpy(&b, &pos_in, sizeof(pos_in));
+      memcpy(&b, &txPos, sizeof(txPos));
       hcan.pTxMsg = &myTxMessage;
 
       myTxMessage.DLC = 8;
@@ -224,8 +235,8 @@ void CAN_rdMsg (uint32_t ctrl, CAN_msg *msg)  {
       myTxMessage.Data[2] = b[2];
       myTxMessage.Data[3] = b[1];
       myTxMessage.Data[4] = b[0];
-      myTxMessage.Data[5] = 0;
-      myTxMessage.Data[6] = 0;
+      myTxMessage.Data[5] = current;
+      myTxMessage.Data[6] = errors;
       myTxMessage.Data[7] = 0;
 
       HAL_CAN_Transmit(&hcan, HAL_MAX_DELAY);
@@ -243,8 +254,8 @@ void CAN_rdMsg (uint32_t ctrl, CAN_msg *msg)  {
       myTxMessage.Data[2] = b[2];
       myTxMessage.Data[3] = b[1];
       myTxMessage.Data[4] = b[0];
-      myTxMessage.Data[5] = 0;
-      myTxMessage.Data[6] = 0;
+      myTxMessage.Data[5] = current;
+      myTxMessage.Data[6] = errors;
       myTxMessage.Data[7] = 0;
 
       HAL_CAN_Transmit(&hcan, HAL_MAX_DELAY);
@@ -275,6 +286,24 @@ void testTransmit(char * foo) {
 }
 COMMAND("cantx", testTransmit);
 
+void sendError() {
+  hcan.pTxMsg = &myTxMessage;
+
+  myTxMessage.DLC = 8;
+  myTxMessage.StdId = TX_ADDRESS;
+  myTxMessage.IDE = CAN_ID_STD;
+  myTxMessage.Data[0] = 0;
+  myTxMessage.Data[1] = 0;
+  myTxMessage.Data[2] = 0;
+  myTxMessage.Data[3] = 0;
+  myTxMessage.Data[4] = 0;
+  myTxMessage.Data[5] = current;
+  myTxMessage.Data[6] = errors;
+  myTxMessage.Data[7] = 0;
+
+  HAL_CAN_Transmit(&hcan, HAL_MAX_DELAY);
+}
+
 static void nrt_init(volatile void * ctx_ptr, volatile hal_pin_inst_t * pin_ptr){
   // struct enc_ctx_t * ctx = (struct enc_ctx_t *)ctx_ptr;
   struct can_pin_ctx_t * pins = (struct can_pin_ctx_t *)pin_ptr;
@@ -284,7 +313,8 @@ static void nrt_init(volatile void * ctx_ptr, volatile hal_pin_inst_t * pin_ptr)
 static void nrt_func(float period, volatile void * ctx_ptr, volatile hal_pin_inst_t * pin_ptr){
   // struct enc_ctx_t * ctx = (struct enc_ctx_t *)ctx_ptr;
   struct can_pin_ctx_t * pins = (struct can_pin_ctx_t *)pin_ptr;
-
+  current = abs((int)(5.0 * PIN(current)));
+  PIN(tx_current) = current;
 
   if (CAN->RF0R & CAN_RF0R_FMP0) {           /* message pending ?*/
     read_CAN();                         /* read the message               */
@@ -292,6 +322,22 @@ static void nrt_func(float period, volatile void * ctx_ptr, volatile hal_pin_ins
     CAN_ReceiveMessage1 = CAN->sFIFOMailBox[0].RDLR;  /* read data */
     CAN_ReceiveMessage2 = CAN->sFIFOMailBox[0].RDLR >> 8;  /* read data */
     CAN->RF0R |= CAN_RF0R_RFOM0;            /* release FIFO */
+  }
+
+  if (PIN(saturated) > MAX_SATURATED && running) {
+    //TX
+    hal_parse("stop");
+    errors = errors | 1 << 2;
+    sendError();
+    printf("saturated!\n");
+  }
+
+  if (current > MAX_CURRENT && running) {
+    //TX
+    hal_parse("stop");
+    errors = errors | 1 << 3;
+    sendError();
+    printf("current!\n");
   }
 
   if (homing == 1) {
@@ -305,21 +351,23 @@ static void nrt_func(float period, volatile void * ctx_ptr, volatile hal_pin_ins
   }
 
   else if (homing == 2) {
-      vel = 0;
-      pos = 0;
-      PIN(vel) = vel;
-      PIN(pos) = homingOffset;
-      if (mode == 0) {
-        hal_parse("ypid0.pos_p = 10");
-        hal_parse("ypid0.vel_ext_cmd =  = vel1.vel");
-      }
+    vel = 0;
+    pos = 0;
+    PIN(vel) = vel;
+    PIN(pos) = homingOffset;
 
-      else if (mode == 1) {
-        hal_parse("ypid0.pos_p = 0");
-        hal_parse("ypid0.vel_ext_cmd = can0.vel");
-      }
-      homing = 0;
+    if (mode == 0) {
+      hal_parse("ypid0.pos_p = 10");
+      hal_parse("ypid0.vel_ext_cmd = vel1.vel");
     }
+
+    else if (mode == 1) {
+      hal_parse("ypid0.pos_p = 0");
+      hal_parse("ypid0.vel_ext_cmd = can0.vel");
+    }
+    homing = 0;
+    printf("done homing!\n");
+  }
 }
 
 
@@ -344,6 +392,24 @@ static void rt_func(float period, volatile void * ctx_ptr, volatile hal_pin_inst
 
   pos_in = PIN(pos_in);
   vel_in = PIN(vel_in);
+
+  txPos = pos_in - homingOffset;
+
+  PIN(tx_pos) = txPos;
+  PIN(rx_pos) = pos;
+}
+
+static void rt_start(float period, volatile void * ctx_ptr, volatile hal_pin_inst_t * pin_ptr){
+  // struct enc_ctx_t * ctx = (struct enc_ctx_t *)ctx_ptr;
+  struct can_pin_ctx_t * pins = (struct can_pin_ctx_t *)pin_ptr;
+  running = 1;
+  errors = 0;
+}
+
+static void rt_stop(float period, volatile void * ctx_ptr, volatile hal_pin_inst_t * pin_ptr){
+  // struct enc_ctx_t * ctx = (struct enc_ctx_t *)ctx_ptr;
+  struct can_pin_ctx_t * pins = (struct can_pin_ctx_t *)pin_ptr;
+  running = 0;
 }
 
 hal_comp_t can_comp_struct = {
@@ -352,9 +418,9 @@ hal_comp_t can_comp_struct = {
   .rt = rt_func,
   .frt = 0,
   .nrt_init = nrt_init,
-  .rt_start = 0,
+  .rt_start = rt_start,
   .frt_start = 0,
-  .rt_stop = 0,
+  .rt_stop = rt_stop,
   .frt_stop = 0,
   .ctx_size = 0,
   .pin_count = sizeof(struct can_pin_ctx_t) / sizeof(struct hal_pin_inst_t),

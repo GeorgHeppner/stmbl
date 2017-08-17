@@ -225,6 +225,9 @@ int main(void)
     HAL_ADC_Start(&hadc2);
     HAL_ADC_Start(&hadc3);
     HAL_ADC_Start(&hadc4);
+
+    TIM8->RCR = 1;//uptate event foo
+
     if (HAL_TIM_Base_Start_IT(&htim8) != HAL_OK){
    	Error_Handler();
     }
@@ -253,7 +256,7 @@ int main(void)
     load_comp(comp_by_name("term"));
     load_comp(comp_by_name("enc"));
     load_comp(comp_by_name("can"));
-    load_comp(comp_by_name("sim"));
+    //load_comp(comp_by_name("sim"));
     load_comp(comp_by_name("io"));
     load_comp(comp_by_name("vel"));
     load_comp(comp_by_name("vel"));
@@ -264,6 +267,7 @@ int main(void)
     // load_comp(comp_by_name("svm"));
     // load_comp(comp_by_name("hv"));
     load_comp(comp_by_name("hvdc"));
+    load_comp(comp_by_name("linrev"));
     // load_comp(comp_by_name("dc"));
     // load_comp(comp_by_name("curpid"));
     // hal parse config
@@ -276,6 +280,7 @@ int main(void)
     hal_parse("term0.rt_prio = 0.1");
 
     hal_parse("can0.rt_prio = 0.2");
+    hal_parse("linrev0.rt_prio = 0.3");
 
     hal_parse("io0.rt_prio = 1.0");
     // hal_parse("curpid0.rt_prio = 3.0");
@@ -283,7 +288,7 @@ int main(void)
     // hal_parse("svm0.rt_prio = 5.0");
     // hal_parse("hv0.rt_prio = 6.0");
     hal_parse("hvdc0.rt_prio = 6.0");
-    hal_parse("sim0.rt_prio = 7.0");
+    //hal_parse("sim0.rt_prio = 7.0");
 
 
     hal_parse("term0.send_step = 100.0");
@@ -313,7 +318,8 @@ int main(void)
     hal_parse("term0.wave2 = vel1.vel");
     hal_parse("term0.wave3 = vel0.vel");
 
-    hal_parse("can0.pos_in = enc0.pos");
+    hal_parse("linrev0.fb_in = enc0.pos");
+    hal_parse("can0.pos_in = linrev0.fb_out");
     hal_parse("can0.vel_in = vel1.vel");
 
     hal_parse("term0.gain0 = 20.0");
@@ -341,8 +347,13 @@ int main(void)
     hal_parse("hvdc0.udc = io0.udc");
 
     hal_parse("ypid0.enable = can0.enable");
+    hal_parse("can0.saturated = ypid0.saturated");
+    hal_parse("can0.current = io0.iw");
 
-    hal_parse("vel1.pos_in = can0.pos");
+    hal_parse("vel1.pos_in = linrev0.cmd_out");
+    hal_parse("linrev0.cmd_in = can0.pos");
+    hal_parse("linrev0.scale = 6.283");
+
     // hal_parse("ypid0.saturated", "fault0.sat");
     // hal_parse("ypid0.pos_error", "fault0.pos_error");
     // hal_parse("conf0.acc_p", "ypid0.vel_p");//TODO: rename config pins?

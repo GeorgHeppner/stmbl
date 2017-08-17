@@ -42,6 +42,7 @@ SOURCES += shared/comps/vel.c
 SOURCES += shared/comps/hal_test.c
 SOURCES += shared/comps/dc.c
 SOURCES += shared/comps/ypid.c
+SOURCES += shared/comps/linrev.c
 
 INCDIRS += shared
 SOURCES += shared/ringbuf.c
