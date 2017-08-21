@@ -21,22 +21,31 @@ HAL_PIN(tx_pos);
 HAL_PIN(rx_pos);
 HAL_PIN(tx_current);
 
+HAL_PIN(home);
 
-#define TX_ADDRESS  0x0001
-#define RX_ADDRESS  0x0007
+HAL_PIN(scale);
 
-#define MAX_SATURATED 0.2
-#define MAX_CURRENT   30       // max. motor current in 1/10 A
 
-uint8_t errors = 0b00000000; // 0: motor disconnected / 1: motor short / 3: position error / 3: overcurrent / 4: undervoltage / 5: overvoltage / 6: CAN timeout / 7: hardfault
+#define TX_ADDRESS       0x0103     // address that is used for responding
+#define RX_ADDRESS       0x0003     // address to listen to
+
+#define MAX_SATURATED    0.2        // max. time in s position PID saturation is allowed
+#define MAX_CURRENT      200        // max. motor current in 1/10 A
+
+#define POSITION_OFFSET  0.0        // static position offset
+#define SCALE            2.0 * M_PI // scaling factor for joint
+
+uint8_t errors = 0b00000000; // 0: motor disconnected / 1: motor short / 2: position error / 3: overcurrent / 4: undervoltage / 5: overvoltage / 6: CAN timeout / 7: hardfault
 uint8_t current = 0;         // motor current in 1/10 A (100mA / LSB)
 
 uint8_t running = 0;
 uint8_t mode = 0; //0 = pos, 1 = vel
-uint8_t indexPin = 0; //0 = pos, 1 = vel
+uint8_t indexPin = 0;
 
-float pos = 0, vel = 0, pos_in = 0, vel_in = 0;
-float txPos = 0;
+uint32_t timeout = 0;
+
+float pos = 0, vel = 0, pos_in = 0, vel_in = 0, txPos = 0;
+
 uint8_t enable = 0;
 
 int8_t homing = 0;
@@ -221,6 +230,9 @@ void CAN_rdMsg (uint32_t ctrl, CAN_msg *msg)  {
       }
     }
 
+    if ((msg->data[0] >> 7)  & 0x01) { //clear errors
+        hal_parse("start");
+    }
 
     if ((msg->data[0] >> 5)  & 0x01) { //get position
       uint8_t b[] = {0,0,0,0};
@@ -260,8 +272,6 @@ void CAN_rdMsg (uint32_t ctrl, CAN_msg *msg)  {
 
       HAL_CAN_Transmit(&hcan, HAL_MAX_DELAY);
     }
-
-
   }
 }
 
@@ -308,6 +318,7 @@ static void nrt_init(volatile void * ctx_ptr, volatile hal_pin_inst_t * pin_ptr)
   // struct enc_ctx_t * ctx = (struct enc_ctx_t *)ctx_ptr;
   struct can_pin_ctx_t * pins = (struct can_pin_ctx_t *)pin_ptr;
   MX_CAN_Init();
+  PIN(scale) = SCALE;
 }
 
 static void nrt_func(float period, volatile void * ctx_ptr, volatile hal_pin_inst_t * pin_ptr){
@@ -342,12 +353,12 @@ static void nrt_func(float period, volatile void * ctx_ptr, volatile hal_pin_ins
 
   if (homing == 1) {
     hal_parse("ypid0.pos_p = 0");
-    hal_parse("ypid0.vel_ext_cmd = 1");
+    hal_parse("ypid0.vel_ext_cmd = 0.1");
   }
 
   else if (homing == -1) {
     hal_parse("ypid0.pos_p = 0");
-    hal_parse("ypid0.vel_ext_cmd = -1");
+    hal_parse("ypid0.vel_ext_cmd = -0.1");
   }
 
   else if (homing == 2) {
@@ -374,9 +385,11 @@ static void nrt_func(float period, volatile void * ctx_ptr, volatile hal_pin_ins
 static void rt_func(float period, volatile void * ctx_ptr, volatile hal_pin_inst_t * pin_ptr){
   // struct enc_ctx_t * ctx = (struct enc_ctx_t *)ctx_ptr;
   struct can_pin_ctx_t * pins = (struct can_pin_ctx_t *)pin_ptr;
+  indexPin = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_10);
+  PIN(home) = indexPin;
+
   if (homing != 0) {
-    indexPin = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_10);
-    if (indexPin) {
+      if (indexPin) {
       PIN(vel) = 0;
       homing = 2;
       homingOffset = pos_in;
@@ -384,7 +397,7 @@ static void rt_func(float period, volatile void * ctx_ptr, volatile hal_pin_inst
   }
 
   else {
-    PIN(pos) = pos + homingOffset;
+    PIN(pos) = pos + homingOffset + POSITION_OFFSET;
     PIN(vel) = vel;
   }
 
@@ -393,10 +406,12 @@ static void rt_func(float period, volatile void * ctx_ptr, volatile hal_pin_inst
   pos_in = PIN(pos_in);
   vel_in = PIN(vel_in);
 
-  txPos = pos_in - homingOffset;
+  txPos = pos_in - homingOffset - POSITION_OFFSET;
 
   PIN(tx_pos) = txPos;
   PIN(rx_pos) = pos;
+
+  //timeout++;
 }
 
 static void rt_start(float period, volatile void * ctx_ptr, volatile hal_pin_inst_t * pin_ptr){
