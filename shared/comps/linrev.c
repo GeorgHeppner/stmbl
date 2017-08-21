@@ -25,6 +25,9 @@ HAL_PIN(cmd_out);
 HAL_PIN(cmd_d_in);
 HAL_PIN(cmd_d_out);
 
+HAL_PIN(fb_d_in);
+HAL_PIN(fb_d_out);
+
 HAL_PIN(fb_in);
 HAL_PIN(fb_out);
 
@@ -38,12 +41,14 @@ static void rt_func(float period, volatile void * ctx_ptr, volatile hal_pin_inst
    struct linrev_pin_ctx_t * pins = (struct linrev_pin_ctx_t *)pin_ptr;
 
    float s = PIN(scale);
-   if(s < 0.01){
+   /*if(abs(s) < 0.01){
       s = 0.01;
-   }
+   }*/
 
    PIN(cmd_out) = mod((PIN(cmd_in) / s) * 2.0 * M_PI);
    PIN(cmd_d_out) = PIN(cmd_d_in) / s * 2.0 * M_PI;
+
+   PIN(fb_d_out) = PIN(fb_d_in) / s * 2.0 * M_PI;
 
    uint8_t q = 0;
 

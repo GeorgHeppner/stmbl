@@ -26,14 +26,14 @@ HAL_PIN(home);
 HAL_PIN(scale);
 
 
-#define TX_ADDRESS       0x0103     // address that is used for responding
-#define RX_ADDRESS       0x0003     // address to listen to
+#define TX_ADDRESS       0x0104     // address that is used for responding
+#define RX_ADDRESS       0x0004     // address to listen to
 
 #define MAX_SATURATED    0.2        // max. time in s position PID saturation is allowed
 #define MAX_CURRENT      200        // max. motor current in 1/10 A
 
 #define POSITION_OFFSET  0.0        // static position offset
-#define SCALE            2.0 * M_PI // scaling factor for joint
+#define SCALE            -2.0 * M_PI // scaling factor for joint
 
 uint8_t errors = 0b00000000; // 0: motor disconnected / 1: motor short / 2: position error / 3: overcurrent / 4: undervoltage / 5: overvoltage / 6: CAN timeout / 7: hardfault
 uint8_t current = 0;         // motor current in 1/10 A (100mA / LSB)
@@ -213,7 +213,7 @@ void CAN_rdMsg (uint32_t ctrl, CAN_msg *msg)  {
         mode = 1;
         hal_parse("ypid0.pos_p = 0");
 
-        hal_parse("ypid0.vel_ext_cmd = can0.vel");
+        hal_parse("ypid0.vel_ext_cmd = linrev0.cmd_d_out");
       }
     }
 
@@ -374,7 +374,7 @@ static void nrt_func(float period, volatile void * ctx_ptr, volatile hal_pin_ins
 
     else if (mode == 1) {
       hal_parse("ypid0.pos_p = 0");
-      hal_parse("ypid0.vel_ext_cmd = can0.vel");
+      hal_parse("ypid0.vel_ext_cmd = linrev0.cmd_d_out");
     }
     homing = 0;
     printf("done homing!\n");

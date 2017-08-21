@@ -320,7 +320,10 @@ int main(void)
 
     hal_parse("linrev0.fb_in = enc0.pos");
     hal_parse("can0.pos_in = linrev0.fb_out");
-    hal_parse("can0.vel_in = vel1.vel");
+
+    hal_parse("can0.vel_in = linrev0.fb_d_out");
+    hal_parse("linrev0.fb_d_in = vel1.vel");
+    hal_parse("linrev0.cmd_d_in = can0.vel");
 
     hal_parse("term0.gain0 = 20.0");
     hal_parse("term0.gain1 = 20.0");
@@ -352,7 +355,8 @@ int main(void)
 
     hal_parse("vel1.pos_in = linrev0.cmd_out");
     hal_parse("linrev0.cmd_in = can0.pos");
-    hal_parse("linrev0.scale = 6.283");
+    hal_parse("linrev0.scale = can0.scale");
+
 
     // hal_parse("ypid0.saturated", "fault0.sat");
     // hal_parse("ypid0.pos_error", "fault0.pos_error");
