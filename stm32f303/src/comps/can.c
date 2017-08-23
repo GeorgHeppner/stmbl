@@ -26,14 +26,14 @@ HAL_PIN(home);
 HAL_PIN(scale);
 
 
-#define TX_ADDRESS       0x0104     // address that is used for responding
-#define RX_ADDRESS       0x0004     // address to listen to
+#define TX_ADDRESS       0x0102     // address that is used for responding
+#define RX_ADDRESS       0x0002     // address to listen to
 
 #define MAX_SATURATED    0.2        // max. time in s position PID saturation is allowed
-#define MAX_CURRENT      200        // max. motor current in 1/10 A
+#define MAX_CURRENT      50        // max. motor current in 1/10 A
 
 #define POSITION_OFFSET  0.0        // static position offset
-#define SCALE            -2.0 * M_PI // scaling factor for joint
+#define SCALE            89.5353 // scaling factor for joint
 
 uint8_t errors = 0b00000000; // 0: motor disconnected / 1: motor short / 2: position error / 3: overcurrent / 4: undervoltage / 5: overvoltage / 6: CAN timeout / 7: hardfault
 uint8_t current = 0;         // motor current in 1/10 A (100mA / LSB)
@@ -104,17 +104,23 @@ static void MX_CAN_Init(void)
   GPIO_InitStruct.Alternate = GPIO_AF9_CAN;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  GPIO_InitStruct.Pin = GPIO_PIN_2;
+  GPIO_InitStruct.Pin = GPIO_PIN_2;  //Green
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-  GPIO_InitStruct.Pin = GPIO_PIN_7;
+  GPIO_InitStruct.Pin = GPIO_PIN_7;  //Blue
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  GPIO_InitStruct.Pin = GPIO_PIN_0;  //Red
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   GPIO_InitStruct.Pin = GPIO_PIN_10;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
@@ -188,9 +194,11 @@ void CAN_rdMsg (uint32_t ctrl, CAN_msg *msg)  {
   if (msg->len == 8) {
     if ((msg->data[0] >> 4)  & 0x01) { //arm motor
       enable = 1;
+      ledRed(1);
     }
     else {
       enable = 0;
+      ledRed(0);
     }
 
     if ((msg->data[0])  & 0x01) { //set position
@@ -202,6 +210,9 @@ void CAN_rdMsg (uint32_t ctrl, CAN_msg *msg)  {
         hal_parse("ypid0.pos_p = 10");
 
         hal_parse("ypid0.vel_ext_cmd = vel1.vel");
+
+        ledBlue(1);
+        ledGreen(0);
       }
     }
 
@@ -214,6 +225,9 @@ void CAN_rdMsg (uint32_t ctrl, CAN_msg *msg)  {
         hal_parse("ypid0.pos_p = 0");
 
         hal_parse("ypid0.vel_ext_cmd = linrev0.cmd_d_out");
+
+        ledBlue(0);
+        ledGreen(1);
       }
     }
 
@@ -222,6 +236,9 @@ void CAN_rdMsg (uint32_t ctrl, CAN_msg *msg)  {
     }
 
     if ((msg->data[0] >> 2)  & 0x01) { //home joint
+      ledGreen(1);
+      ledBlue(0);
+      ledRed(0);
       if ((msg->data[0] >> 3)  & 0x01) { //set direction
         homing = 1;
       }
@@ -314,6 +331,37 @@ void sendError() {
   HAL_CAN_Transmit(&hcan, HAL_MAX_DELAY);
 }
 
+void doneHoming() {
+  hcan.pTxMsg = &myTxMessage;
+
+  myTxMessage.DLC = 8;
+  myTxMessage.StdId = TX_ADDRESS;
+  myTxMessage.IDE = CAN_ID_STD;
+  myTxMessage.Data[0] = 1 << 2;
+  myTxMessage.Data[1] = 0;
+  myTxMessage.Data[2] = 0;
+  myTxMessage.Data[3] = 0;
+  myTxMessage.Data[4] = 0;
+  myTxMessage.Data[5] = current;
+  myTxMessage.Data[6] = errors;
+  myTxMessage.Data[7] = 0;
+
+  HAL_CAN_Transmit(&hcan, HAL_MAX_DELAY);
+}
+
+void ledRed(uint8_t state) {
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, !state);
+}
+
+void ledBlue(uint8_t state) {
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_7, !state);
+}
+
+void ledGreen(uint8_t state) {
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_2, !state);
+}
+
+
 static void nrt_init(volatile void * ctx_ptr, volatile hal_pin_inst_t * pin_ptr){
   // struct enc_ctx_t * ctx = (struct enc_ctx_t *)ctx_ptr;
   struct can_pin_ctx_t * pins = (struct can_pin_ctx_t *)pin_ptr;
@@ -352,11 +400,13 @@ static void nrt_func(float period, volatile void * ctx_ptr, volatile hal_pin_ins
   }
 
   if (homing == 1) {
+    homing = 3;
     hal_parse("ypid0.pos_p = 0");
     hal_parse("ypid0.vel_ext_cmd = 0.1");
   }
 
   else if (homing == -1) {
+    homing = 3;
     hal_parse("ypid0.pos_p = 0");
     hal_parse("ypid0.vel_ext_cmd = -0.1");
   }
@@ -370,13 +420,20 @@ static void nrt_func(float period, volatile void * ctx_ptr, volatile hal_pin_ins
     if (mode == 0) {
       hal_parse("ypid0.pos_p = 10");
       hal_parse("ypid0.vel_ext_cmd = vel1.vel");
+
+      ledBlue(1);
+      ledGreen(0);
     }
 
     else if (mode == 1) {
       hal_parse("ypid0.pos_p = 0");
       hal_parse("ypid0.vel_ext_cmd = linrev0.cmd_d_out");
+
+      ledBlue(0);
+      ledGreen(1);
     }
     homing = 0;
+    doneHoming();
     printf("done homing!\n");
   }
 }
@@ -390,9 +447,9 @@ static void rt_func(float period, volatile void * ctx_ptr, volatile hal_pin_inst
 
   if (homing != 0) {
       if (indexPin) {
-      PIN(vel) = 0;
-      homing = 2;
-      homingOffset = pos_in;
+        PIN(vel) = 0;
+        homing = 2;
+        homingOffset = pos_in;
     }
   }
 
