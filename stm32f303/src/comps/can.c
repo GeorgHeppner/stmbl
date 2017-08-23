@@ -26,14 +26,14 @@ HAL_PIN(home);
 HAL_PIN(scale);
 
 
-#define TX_ADDRESS       0x0102     // address that is used for responding
-#define RX_ADDRESS       0x0002     // address to listen to
+#define TX_ADDRESS       0x0105     // address that is used for responding
+#define RX_ADDRESS       0x0005     // address to listen to
 
 #define MAX_SATURATED    0.2        // max. time in s position PID saturation is allowed
 #define MAX_CURRENT      50        // max. motor current in 1/10 A
 
-#define POSITION_OFFSET  0.0        // static position offset
-#define SCALE            89.5353 // scaling factor for joint
+#define POSITION_OFFSET  0.0         // static position offset
+#define SCALE            2.0 * M_PI //89.5353 // scaling factor for joint
 
 uint8_t errors = 0b00000000; // 0: motor disconnected / 1: motor short / 2: position error / 3: overcurrent / 4: undervoltage / 5: overvoltage / 6: CAN timeout / 7: hardfault
 uint8_t current = 0;         // motor current in 1/10 A (100mA / LSB)
@@ -207,7 +207,7 @@ void CAN_rdMsg (uint32_t ctrl, CAN_msg *msg)  {
 
       if (mode == 1) {
         mode = 0;
-        hal_parse("ypid0.pos_p = 10");
+        hal_parse("ypid0.pos_p = 3");
 
         hal_parse("ypid0.vel_ext_cmd = vel1.vel");
 
@@ -334,17 +334,23 @@ void sendError() {
 void doneHoming() {
   hcan.pTxMsg = &myTxMessage;
 
+  uint8_t b[] = {0,0,0,0};
+  memcpy(&b, &txPos, sizeof(txPos));
+  hcan.pTxMsg = &myTxMessage;
+
   myTxMessage.DLC = 8;
   myTxMessage.StdId = TX_ADDRESS;
   myTxMessage.IDE = CAN_ID_STD;
   myTxMessage.Data[0] = 1 << 2;
-  myTxMessage.Data[1] = 0;
-  myTxMessage.Data[2] = 0;
-  myTxMessage.Data[3] = 0;
-  myTxMessage.Data[4] = 0;
+  myTxMessage.Data[1] = b[3];
+  myTxMessage.Data[2] = b[2];
+  myTxMessage.Data[3] = b[1];
+  myTxMessage.Data[4] = b[0];
   myTxMessage.Data[5] = current;
   myTxMessage.Data[6] = errors;
   myTxMessage.Data[7] = 0;
+
+  HAL_CAN_Transmit(&hcan, HAL_MAX_DELAY);
 
   HAL_CAN_Transmit(&hcan, HAL_MAX_DELAY);
 }
@@ -413,12 +419,12 @@ static void nrt_func(float period, volatile void * ctx_ptr, volatile hal_pin_ins
 
   else if (homing == 2) {
     vel = 0;
-    pos = 0;
+    //pos = 0;
     PIN(vel) = vel;
     PIN(pos) = homingOffset;
 
     if (mode == 0) {
-      hal_parse("ypid0.pos_p = 10");
+      hal_parse("ypid0.pos_p = 3");
       hal_parse("ypid0.vel_ext_cmd = vel1.vel");
 
       ledBlue(1);
@@ -432,10 +438,37 @@ static void nrt_func(float period, volatile void * ctx_ptr, volatile hal_pin_ins
       ledBlue(0);
       ledGreen(1);
     }
+
+    if (pos != 0 && mode == 0) {
+      if (pos > 0) {
+        for (float i = 0; i < pos; i += 0.01) {
+          sleep_ms(10);
+          PIN(pos) = i + homingOffset + POSITION_OFFSET;
+        }
+      }
+      else {
+        for (float i = 0; i > pos; i -= 0.01) {
+          //printf("i: %f\n", i);
+          sleep_ms(10);
+          PIN(pos) = i + homingOffset + POSITION_OFFSET;
+        }
+      }
+    }
     homing = 0;
     doneHoming();
     printf("done homing!\n");
   }
+}
+
+void sleep_ms(uint32_t ms) {
+  volatile uint32_t i;
+  for (i = ms; i != 0; i--) {
+    sleep_us(1000);
+  }
+}
+void sleep_us(uint32_t us) {
+  volatile uint32_t i;
+  for (i = ((SystemCoreClock / 8000000) * us); i != 0; i--) {}
 }
 
 
