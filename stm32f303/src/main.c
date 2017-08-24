@@ -339,7 +339,7 @@ int main(void)
     hal_parse("ypid0.max_acc = 80000");
     // hal_parse("net0.fb_d", "ypid0.vel_fb");
     // hal_parse("fault0.en_pid", "ypid0.enable");
-    hal_parse("ypid0.pos_p = 3");
+    hal_parse("ypid0.pos_p = 5");
     hal_parse("ypid0.vel_p = 1");
     hal_parse("ypid0.vel_i = 0.005");
     hal_parse("ypid0.vel_ff = 1");
