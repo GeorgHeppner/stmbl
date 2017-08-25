@@ -339,7 +339,7 @@ int main(void)
     hal_parse("ypid0.max_acc = 80000");
     // hal_parse("net0.fb_d", "ypid0.vel_fb");
     // hal_parse("fault0.en_pid", "ypid0.enable");
-    hal_parse("ypid0.pos_p = 5");
+    hal_parse("ypid0.pos_p = 7");
     hal_parse("ypid0.vel_p = 1");
     hal_parse("ypid0.vel_i = 0.005");
     hal_parse("ypid0.vel_ff = 1");
@@ -356,6 +356,8 @@ int main(void)
     hal_parse("vel1.pos_in = linrev0.cmd_out");
     hal_parse("linrev0.cmd_in = can0.pos");
     hal_parse("linrev0.scale = can0.scale");
+
+    hal_parse("linrev0.home_d_in = can0.home_vel_out");
 
 
     // hal_parse("ypid0.saturated", "fault0.sat");

@@ -25,6 +25,10 @@ HAL_PIN(cmd_out);
 HAL_PIN(cmd_d_in);
 HAL_PIN(cmd_d_out);
 
+HAL_PIN(home_d_in);
+HAL_PIN(home_d_out);
+HAL_PIN(home_neg_d_out);
+
 HAL_PIN(fb_d_in);
 HAL_PIN(fb_d_out);
 
@@ -47,6 +51,9 @@ static void rt_func(float period, volatile void * ctx_ptr, volatile hal_pin_inst
 
    PIN(cmd_out) = mod((PIN(cmd_in) / s) * 2.0 * M_PI);
    PIN(cmd_d_out) = PIN(cmd_d_in) / s * 2.0 * M_PI;
+
+   PIN(home_d_out) = PIN(home_d_in) / s * 2.0 * M_PI;
+   PIN(home_neg_d_out) = -PIN(home_d_out);
 
    PIN(fb_d_out) = PIN(fb_d_in) / s * 2.0 * M_PI;
 

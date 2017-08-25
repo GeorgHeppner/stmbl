@@ -21,19 +21,26 @@ HAL_PIN(tx_pos);
 HAL_PIN(rx_pos);
 HAL_PIN(tx_current);
 
+HAL_PIN(home_vel_out);
+
 HAL_PIN(home);
 
 HAL_PIN(scale);
 
 
-#define TX_ADDRESS       0x0102       // address that is used for responding
-#define RX_ADDRESS       0x0002       // address to listen to
+#define TX_ADDRESS       0x0106       // address that is used for responding
+#define RX_ADDRESS       0x0006       // address to listen to
 
 #define MAX_SATURATED    0.2          // max. time in s position PID saturation is allowed
-#define MAX_CURRENT      50           // max. motor current in 1/10 A
+#define MAX_CURRENT      300           // max. motor current in 1/10 A
 
 #define POSITION_OFFSET  0.0          // static position offset
-#define SCALE            -89.5353     //2.0 * M_PI //89.5353 // scaling factor for joint
+
+//#define SCALE            2.0 * M_PI                // scaling factor for joint
+#define SCALE            -(2.0 * M_PI) / 24.3495    // scaling factor for joint roll plug
+//#define SCALE            89.5353                   // scaling factor for joint linear axis
+
+#define HOMING_VEL       0.1
 
 #define PULLUP           GPIO_PULLUP  // PULLDOWN for linear axis, GPIO_PULLUP for all else
 
@@ -410,13 +417,13 @@ static void nrt_func(float period, volatile void * ctx_ptr, volatile hal_pin_ins
   if (homing == 1) {
     homing = 3;
     hal_parse("ypid0.pos_p = 0");
-    hal_parse("ypid0.vel_ext_cmd = 0.1");
+    hal_parse("ypid0.vel_ext_cmd = linrev0.home_d_out");
   }
 
   else if (homing == -1) {
     homing = 3;
     hal_parse("ypid0.pos_p = 0");
-    hal_parse("ypid0.vel_ext_cmd = -0.1");
+    hal_parse("ypid0.vel_ext_cmd = linrev0.home_neg_d_out");
   }
 
   else if (homing == 2) {
@@ -502,6 +509,8 @@ static void rt_func(float period, volatile void * ctx_ptr, volatile hal_pin_inst
 
   PIN(tx_pos) = txPos;
   PIN(rx_pos) = pos;
+
+  PIN(home_vel_out) = HOMING_VEL;
 
   //timeout++;
 }
