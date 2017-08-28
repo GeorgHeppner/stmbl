@@ -28,21 +28,96 @@ HAL_PIN(home);
 HAL_PIN(scale);
 
 
-#define TX_ADDRESS       0x0106       // address that is used for responding
-#define RX_ADDRESS       0x0006       // address to listen to
+//#define TX_ADDRESS       0x0103     // address that is used for responding
+//#define RX_ADDRESS       0x0003       // address to listen to
 
+//#define MAX_SATURATED    0.2          // max. time in s position PID saturation is allowed
+//#define MAX_CURRENT      80           // max. motor current in 1/10 A
+
+//#define POSITION_OFFSET  0.0          // static position offset
+
+//#define SCALE            -2.0 * M_PI                // scaling factor for joint 1,3
+////#define SCALE            2.0 * M_PI                // scaling factor for joint 4,5
+////#define SCALE            -(2.0 * M_PI) / 24.3495    // scaling factor for joint roll plug (6)
+////#define SCALE            -0.0895353 //-89.5353                   // scaling factor for joint linear axis (2)
+
+////#define HOMING_VEL       0.05 	// For Linear axis (2)
+//#define HOMING_VEL       0.1		// For all else
+
+//#define PULLUP           GPIO_PULLUP  // GPIO_PULLDOWN for linear axis, GPIO_PULLUP for all else
+
+
+// ID 1
+/*
+#define TX_ADDRESS       0x0101     // address that is used for responding
+#define RX_ADDRESS       0x0001       // address to listen to
 #define MAX_SATURATED    0.2          // max. time in s position PID saturation is allowed
-#define MAX_CURRENT      300           // max. motor current in 1/10 A
-
+#define MAX_CURRENT      60           // max. motor current in 1/10 A
 #define POSITION_OFFSET  0.0          // static position offset
+#define SCALE            -2.0 * M_PI                // scaling factor for joint 1,3
+#define HOMING_VEL       0.1		// For all else
+#define PULLUP           GPIO_PULLUP  // GPIO_PULLDOWN for linear axis, GPIO_PULLUP for all else
+*/
+// ID 2
+/*
+#define TX_ADDRESS       0x0102     // address that is used for responding
+#define RX_ADDRESS       0x0002       // address to listen to
+#define MAX_SATURATED    0.2          // max. time in s position PID saturation is allowed
+#define MAX_CURRENT      60           // max. motor current in 1/10 A
+#define POSITION_OFFSET  0.0          // static position offset
+#define SCALE            -0.0895353 //-89.5353                // scaling factor for linear axis
+#define HOMING_VEL       0.05		// For linear axis
+#define PULLUP           GPIO_PULLDOWN  // GPIO_PULLDOWN for linear axis, GPIO_PULLUP for all else
+*/
 
-//#define SCALE            2.0 * M_PI                // scaling factor for joint
-#define SCALE            -(2.0 * M_PI) / 24.3495    // scaling factor for joint roll plug
-//#define SCALE            89.5353                   // scaling factor for joint linear axis
+// ID 3
 
-#define HOMING_VEL       0.1
+#define TX_ADDRESS       0x0103     // address that is used for responding
+#define RX_ADDRESS       0x0003       // address to listen to
+#define MAX_SATURATED    0.2          // max. time in s position PID saturation is allowed
+#define MAX_CURRENT      80           // max. motor current in 1/10 A
+#define POSITION_OFFSET  0.0          // static position offset
+#define SCALE            -2.0 * M_PI    // scaling factor for joint 1,3
+#define HOMING_VEL       0.1		// For all else
+#define PULLUP           GPIO_PULLUP  // GPIO_PULLDOWN for linear axis, GPIO_PULLUP for all else
 
-#define PULLUP           GPIO_PULLUP  // PULLDOWN for linear axis, GPIO_PULLUP for all else
+// ID 4
+/*
+#define TX_ADDRESS       0x0104     // address that is used for responding
+#define RX_ADDRESS       0x0004       // address to listen to
+#define MAX_SATURATED    0.2          // max. time in s position PID saturation is allowed
+#define MAX_CURRENT      80           // max. motor current in 1/10 A
+#define POSITION_OFFSET  0.0          // static position offset
+#define SCALE            2.0 * M_PI                // scaling factor for joint 4,5
+#define HOMING_VEL       0.1		// For all else
+#define PULLUP           GPIO_PULLUP  // GPIO_PULLDOWN for linear axis, GPIO_PULLUP for all else
+*/
+
+// ID 5
+/*
+#define TX_ADDRESS       0x0105     // address that is used for responding
+#define RX_ADDRESS       0x0005       // address to listen to
+#define MAX_SATURATED    0.2          // max. time in s position PID saturation is allowed
+#define MAX_CURRENT      60           // max. motor current in 1/10 A
+#define POSITION_OFFSET  0.0          // static position offset
+#define SCALE            2.0 * M_PI                // scaling factor for joint 4,5
+#define HOMING_VEL       0.1		// For all else
+#define PULLUP           GPIO_PULLUP  // GPIO_PULLDOWN for linear axis, GPIO_PULLUP for all else
+*/
+
+// ID 6
+/*
+#define TX_ADDRESS       0x0106     // address that is used for responding
+#define RX_ADDRESS       0x0006       // address to listen to
+#define MAX_SATURATED    0.2          // max. time in s position PID saturation is allowed
+#define MAX_CURRENT      50           // max. motor current in 1/10 A
+#define POSITION_OFFSET  0.0          // static position offset
+#define SCALE             -(2.0 * M_PI) / 24.3495               // scaling factor for joint 
+#define HOMING_VEL       0.1		// For all else
+#define PULLUP           GPIO_PULLUP  // GPIO_PULLDOWN for linear axis, GPIO_PULLUP for all else
+*/
+
+
 
 uint8_t errors = 0b00000000; // 0: motor disconnected / 1: motor short / 2: position error / 3: overcurrent / 4: undervoltage / 5: overvoltage / 6: CAN timeout / 7: hardfault
 uint8_t current = 0;         // motor current in 1/10 A (100mA / LSB)
@@ -216,7 +291,7 @@ void CAN_rdMsg (uint32_t ctrl, CAN_msg *msg)  {
 
       if (mode == 1) {
         mode = 0;
-        hal_parse("ypid0.pos_p = 7");
+        hal_parse("ypid0.pos_p = 0.4"); // Was 7
 
         hal_parse("ypid0.vel_ext_cmd = vel1.vel");
 
@@ -433,7 +508,7 @@ static void nrt_func(float period, volatile void * ctx_ptr, volatile hal_pin_ins
     PIN(pos) = homingOffset;
 
     if (mode == 0) {
-      hal_parse("ypid0.pos_p = 7");
+      hal_parse("ypid0.pos_p = 0.4");  // Homing P Value?  (was 1)
       hal_parse("ypid0.vel_ext_cmd = vel1.vel");
 
       ledBlue(1);
