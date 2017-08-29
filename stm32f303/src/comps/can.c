@@ -29,7 +29,7 @@ HAL_PIN(scale);
 
 
 //#define TX_ADDRESS       0x0103     // address that is used for responding
-//#define RX_ADDRESS       0x0003       // address to listen to
+//#define RX_ADDRESS       0x0006       // address to listen to
 
 //#define MAX_SATURATED    0.2          // max. time in s position PID saturation is allowed
 //#define MAX_CURRENT      80           // max. motor current in 1/10 A
@@ -47,8 +47,10 @@ HAL_PIN(scale);
 //#define PULLUP           GPIO_PULLUP  // GPIO_PULLDOWN for linear axis, GPIO_PULLUP for all else
 
 
+#define BOARD_ID  0x006
+
 // ID 1
-/*
+#if BOARD_ID == 0x001
 #define TX_ADDRESS       0x0101     // address that is used for responding
 #define RX_ADDRESS       0x0001       // address to listen to
 #define MAX_SATURATED    0.2          // max. time in s position PID saturation is allowed
@@ -57,9 +59,9 @@ HAL_PIN(scale);
 #define SCALE            -2.0 * M_PI                // scaling factor for joint 1,3
 #define HOMING_VEL       0.1		// For all else
 #define PULLUP           GPIO_PULLUP  // GPIO_PULLDOWN for linear axis, GPIO_PULLUP for all else
-*/
+
 // ID 2
-/*
+#elif BOARD_ID == 0x002
 #define TX_ADDRESS       0x0102     // address that is used for responding
 #define RX_ADDRESS       0x0002       // address to listen to
 #define MAX_SATURATED    0.2          // max. time in s position PID saturation is allowed
@@ -68,11 +70,11 @@ HAL_PIN(scale);
 #define SCALE            -0.0895353   //-89.5353                // scaling factor for linear axis
 #define HOMING_VEL       0.05		// For linear axis
 #define PULLUP           GPIO_PULLDOWN  // GPIO_PULLDOWN for linear axis, GPIO_PULLUP for all else
-*/
+
 // ALSO SET THE PID TO 1
 
 // ID 3
-/*
+#elif BOARD_ID == 0x003
 #define TX_ADDRESS       0x0103     // address that is used for responding
 #define RX_ADDRESS       0x0003       // address to listen to
 #define MAX_SATURATED    0.2          // max. time in s position PID saturation is allowed
@@ -81,9 +83,9 @@ HAL_PIN(scale);
 #define SCALE            -2.0 * M_PI    // scaling factor for joint 1,3
 #define HOMING_VEL       0.1		// For all else
 #define PULLUP           GPIO_PULLUP  // GPIO_PULLDOWN for linear axis, GPIO_PULLUP for all else
-*/
+
 // ID 4
-/*
+#elif BOARD_ID == 0x004
 #define TX_ADDRESS       0x0104     // address that is used for responding
 #define RX_ADDRESS       0x0004       // address to listen to
 #define MAX_SATURATED    0.2          // max. time in s position PID saturation is allowed
@@ -92,10 +94,10 @@ HAL_PIN(scale);
 #define SCALE            2.0 * M_PI                // scaling factor for joint 4,5
 #define HOMING_VEL       0.1		// For all else
 #define PULLUP           GPIO_PULLUP  // GPIO_PULLDOWN for linear axis, GPIO_PULLUP for all else
-*/
+
 
 // ID 5
-/*
+#elif BOARD_ID == 0x005
 #define TX_ADDRESS       0x0105     // address that is used for responding
 #define RX_ADDRESS       0x0005       // address to listen to
 #define MAX_SATURATED    0.2          // max. time in s position PID saturation is allowed
@@ -104,10 +106,10 @@ HAL_PIN(scale);
 #define SCALE            2.0 * M_PI                // scaling factor for joint 4,5
 #define HOMING_VEL       0.1		// For all else
 #define PULLUP           GPIO_PULLUP  // GPIO_PULLDOWN for linear axis, GPIO_PULLUP for all else
-*/
+
 
 // ID 6
-
+#elif BOARD_ID == 0x006
 #define TX_ADDRESS       0x0106     // address that is used for responding
 #define RX_ADDRESS       0x0006       // address to listen to
 #define MAX_SATURATED    0.2          // max. time in s position PID saturation is allowed
@@ -116,7 +118,7 @@ HAL_PIN(scale);
 #define SCALE             -(2.0 * M_PI) / 24.3495               // scaling factor for joint 
 #define HOMING_VEL       0.1		// For all else
 #define PULLUP           GPIO_PULLUP  // GPIO_PULLDOWN for linear axis, GPIO_PULLUP for all else
-
+#endif
 
 
 
@@ -296,7 +298,15 @@ void CAN_rdMsg (uint32_t ctrl, CAN_msg *msg)  {
       // In Case of velocity mode, activate the position mode and set a P value for that... (TODO: Use the Default P Value instead)
       if (mode == 1) {
         mode = 0;
-        hal_parse("ypid0.pos_p = 7"); // Was 7 for 6 and 2 0.4 for all else
+	if (BOARD_ID == 0x002 || BOARD_ID == 0x006)
+	{
+	        hal_parse("ypid0.pos_p = 7"); // Was 7 for 6 and 2 0.4 for all else
+	}	
+	else
+	{
+		hal_parse("ypid0.pose_p = 0.4"); // TODO: Figure out what hal parese cann actually work with and make this better
+	}
+	
 
         hal_parse("ypid0.vel_ext_cmd = vel1.vel");
 
@@ -537,7 +547,14 @@ static void nrt_func(float period, volatile void * ctx_ptr, volatile hal_pin_ins
 
 
     if (mode == 0) {
-      hal_parse("ypid0.pos_p = 7");  // p Value for position controller during homing  (was 7 For Linear Axis! 0.4 for all else)
+      if (BOARD_ID == 0x002 || BOARD_ID == 0x006)
+      {
+	      hal_parse("ypid0.pos_p = 7");  // p Value for position controller during homing  (was 7 For Linear Axis! 0.4 for all else)
+      }
+      else
+      {
+	      hal_parse("ypid0.pos_p = 0.4");  // p Value for position controller during homing  (was 7 For Linear Axis! 0.4 for all else)
+      }
       hal_parse("ypid0.vel_ext_cmd = vel1.vel");
 
       ledBlue(1);
