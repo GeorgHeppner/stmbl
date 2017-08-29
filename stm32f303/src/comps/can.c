@@ -47,7 +47,7 @@ HAL_PIN(scale);
 //#define PULLUP           GPIO_PULLUP  // GPIO_PULLDOWN for linear axis, GPIO_PULLUP for all else
 
 
-#define BOARD_ID  0x006
+#define BOARD_ID  0x001
 
 // ID 1
 #if BOARD_ID == 0x001
@@ -55,7 +55,8 @@ HAL_PIN(scale);
 #define RX_ADDRESS       0x0001       // address to listen to
 #define MAX_SATURATED    0.2          // max. time in s position PID saturation is allowed
 #define MAX_CURRENT      60           // max. motor current in 1/10 A
-#define POSITION_OFFSET  0.0          // static position offset
+//#define POSITION_OFFSET  -0.256          // static position offset
+#define POSITION_OFFSET  0.0          // use Zero Offset, Ros will handle it
 #define SCALE            -2.0 * M_PI                // scaling factor for joint 1,3
 #define HOMING_VEL       0.1		// For all else
 #define PULLUP           GPIO_PULLUP  // GPIO_PULLDOWN for linear axis, GPIO_PULLUP for all else
@@ -66,7 +67,8 @@ HAL_PIN(scale);
 #define RX_ADDRESS       0x0002       // address to listen to
 #define MAX_SATURATED    0.2          // max. time in s position PID saturation is allowed
 #define MAX_CURRENT      60           // max. motor current in 1/10 A
-#define POSITION_OFFSET  0.0          // static position offset
+//#define POSITION_OFFSET  0.015          // static position offset
+#define POSITION_OFFSET  0.0          // use Zero Offset, Ros will handle it
 #define SCALE            -0.0895353   //-89.5353                // scaling factor for linear axis
 #define HOMING_VEL       0.05		// For linear axis
 #define PULLUP           GPIO_PULLDOWN  // GPIO_PULLDOWN for linear axis, GPIO_PULLUP for all else
@@ -79,7 +81,8 @@ HAL_PIN(scale);
 #define RX_ADDRESS       0x0003       // address to listen to
 #define MAX_SATURATED    0.2          // max. time in s position PID saturation is allowed
 #define MAX_CURRENT      80           // max. motor current in 1/10 A
-#define POSITION_OFFSET  0.0          // static position offset
+//#define POSITION_OFFSET  0.0204          // static position offset
+#define POSITION_OFFSET  0.0          // use Zero Offset, Ros will handle it
 #define SCALE            -2.0 * M_PI    // scaling factor for joint 1,3
 #define HOMING_VEL       0.1		// For all else
 #define PULLUP           GPIO_PULLUP  // GPIO_PULLDOWN for linear axis, GPIO_PULLUP for all else
@@ -90,7 +93,8 @@ HAL_PIN(scale);
 #define RX_ADDRESS       0x0004       // address to listen to
 #define MAX_SATURATED    0.2          // max. time in s position PID saturation is allowed
 #define MAX_CURRENT      80           // max. motor current in 1/10 A
-#define POSITION_OFFSET  0.0          // static position offset
+//#define POSITION_OFFSET  2.5399          // static position offset
+#define POSITION_OFFSET  0.0          // use Zero Offset, Ros will handle it
 #define SCALE            2.0 * M_PI                // scaling factor for joint 4,5
 #define HOMING_VEL       0.1		// For all else
 #define PULLUP           GPIO_PULLUP  // GPIO_PULLDOWN for linear axis, GPIO_PULLUP for all else
@@ -102,7 +106,8 @@ HAL_PIN(scale);
 #define RX_ADDRESS       0x0005       // address to listen to
 #define MAX_SATURATED    0.2          // max. time in s position PID saturation is allowed
 #define MAX_CURRENT      60           // max. motor current in 1/10 A
-#define POSITION_OFFSET  0.0          // static position offset
+//#define POSITION_OFFSET  0.4744          // static position offset
+#define POSITION_OFFSET  0.0          // use Zero Offset, Ros will handle it
 #define SCALE            2.0 * M_PI                // scaling factor for joint 4,5
 #define HOMING_VEL       0.1		// For all else
 #define PULLUP           GPIO_PULLUP  // GPIO_PULLDOWN for linear axis, GPIO_PULLUP for all else
@@ -114,7 +119,8 @@ HAL_PIN(scale);
 #define RX_ADDRESS       0x0006       // address to listen to
 #define MAX_SATURATED    0.2          // max. time in s position PID saturation is allowed
 #define MAX_CURRENT      90           // max. motor current in 1/10 A
-#define POSITION_OFFSET  -0.2          // static position offset ( Where the Index pin is situated
+//#define POSITION_OFFSET  -0.2          // static position offset ( Where the Index pin is situated
+#define POSITION_OFFSET  0.0          // use Zero Offset, Ros will handle it
 #define SCALE             -(2.0 * M_PI) / 24.3495               // scaling factor for joint 
 #define HOMING_VEL       0.1		// For all else
 #define PULLUP           GPIO_PULLUP  // GPIO_PULLDOWN for linear axis, GPIO_PULLUP for all else
@@ -571,19 +577,24 @@ static void nrt_func(float period, volatile void * ctx_ptr, volatile hal_pin_ins
 
     // if POS (note that pos is the current value given as position input. So during homing, this actually means it is a homingOffset to move to after the homing)
     if (pos != 0 && mode == 0) {
+
       if (pos > 0) {
         for (float i = 0; i < pos; i += 0.01) {
           sleep_ms(10);
+		//float temp23 = i + homingOffset + POSITION_OFFSET;
+	        // printf("MTH: %f, %f, %f, overall: %f , pos_in: %f \n",i, homingOffset , POSITION_OFFSET, temp23, pos_in); 
            //PIN(pos) = i + homingOffset + POSITION_OFFSET;  // applying the position offset at this point is pointless as we are moving within the zeroed encoder world
-	   PIN(pos) = i + homingOffset;
+	   PIN(pos) = i + homingOffset + POSITION_OFFSET;
+
         }
       }
       else {
         for (float i = 0; i > pos; i -= 0.01) {
           //printf("i: %f\n", i);
+	  //printf("MTH -: %f, %f, %f\n",i, homingOffset , POSITION_OFFSET); 
           sleep_ms(10);
           //PIN(pos) = i + homingOffset + POSITION_OFFSET;  // Same reason as above
-	  PIN(pos) = i + homingOffset;
+	  PIN(pos) = i + homingOffset + POSITION_OFFSET;
         }
       }
     }
@@ -627,8 +638,8 @@ static void rt_func(float period, volatile void * ctx_ptr, volatile hal_pin_inst
      // this is supposedly the position than we want to move to.. so the positoon that can is reporting
     // BEWARE! THIS IS THE INTERNAL position we want to go to (aka the encoder position )
    // Position Target = Commanded Position + homing offset (gets rid of the offset during homing) - Position offset (which we set to make it to zero
-    //PIN(pos) = pos + homingOffset + POSITION_OFFSET;  
-    PIN(pos) = pos + homingOffset - POSITION_OFFSET;  
+    PIN(pos) = pos + homingOffset + POSITION_OFFSET;   // Niklas Version.. Seems wrong but .. well
+    //PIN(pos) = pos + homingOffset - POSITION_OFFSET;  
     PIN(vel) = vel;
   }
 
@@ -640,8 +651,8 @@ static void rt_func(float period, volatile void * ctx_ptr, volatile hal_pin_inst
 
    // Reported position
 // Position Report = Actual position ( internal position - homing offse)  + Offset 
-  //txPos = pos_in - homingOffset - POSITION_OFFSET;
-  txPos = pos_in - homingOffset + POSITION_OFFSET;
+  txPos = pos_in - homingOffset - POSITION_OFFSET; // Niklas version i dont think this is right
+  //txPos = pos_in - homingOffset + POSITION_OFFSET;
 
  // Report the tx position to other modules
   PIN(tx_pos) = txPos;
