@@ -12,6 +12,7 @@ HAL_COMP(hvdc);
 HAL_PIN(uq);
 //dclink input
 HAL_PIN(udc);
+HAL_PIN(en);
 
 
 static void rt_func(float period, volatile void * ctx_ptr, volatile hal_pin_inst_t * pin_ptr){
@@ -21,6 +22,14 @@ static void rt_func(float period, volatile void * ctx_ptr, volatile hal_pin_inst
   int32_t dcpwm  = PIN(uq)/2.0/udc * 4800;
   PWM_U = 4800-CLAMP(2400 - dcpwm , 50, 4750);
   PWM_W = 4800-CLAMP(2400 + dcpwm , 50, 4750);
+
+  if(PIN(en) > 0.0){
+    TIM8->BDTR |= TIM_BDTR_MOE; // on
+  }
+  else {
+    TIM8->BDTR &= ~TIM_BDTR_MOE; // off
+  }
+
 }
 
 static void rt_stop(float period, volatile void * ctx_ptr, volatile hal_pin_inst_t * pin_ptr){
