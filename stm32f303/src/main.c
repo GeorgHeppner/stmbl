@@ -339,10 +339,10 @@ int main(void)
     hal_parse("ypid0.max_acc = 80000");
     // hal_parse("net0.fb_d", "ypid0.vel_fb");
     // hal_parse("fault0.en_pid", "ypid0.enable");
-    hal_parse("ypid0.pos_p = 7");
-    hal_parse("ypid0.vel_p = 1");
-    hal_parse("ypid0.vel_i = 0.005");
-    hal_parse("ypid0.vel_ff = 1");
+    hal_parse("ypid0.pos_p = 0.4"); // Default Position Controller P Value Was 7 for linear axis
+    hal_parse("ypid0.vel_p = 1");   // Default Velocity controller P Value
+    hal_parse("ypid0.vel_i = 0.005");	// Default Velocity Controller I Value
+    hal_parse("ypid0.vel_ff = 1");	// Default Velocity controller D Value
     // hal_parse("ypid0.max_vel");
     // hal_parse("ypid0.max_acc");
     hal_parse("ypid0.max_out = io0.udc");
