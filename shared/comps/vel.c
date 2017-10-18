@@ -66,11 +66,12 @@ static void rt_func(float period, volatile void * ctx_ptr, volatile hal_pin_inst
 
    ctx->acc_sum += acc_ff * period;
 
-   if (ABS(ctx->acc_sum + vel_ff) < 0.0001) {
-     ctx->acc_sum = 0.0;
+   if (ABS(ctx->acc_sum + vel_ff) < 0.0005) {
+     PIN(vel) = 0.0;
+   } else {
+     PIN(vel) = ctx->acc_sum + vel_ff;
    }
 
-   PIN(vel) = ctx->acc_sum + vel_ff;
    PIN(acc) = acc_ff;
 
    vel_ff = 2.0 * d * w * pos_error;

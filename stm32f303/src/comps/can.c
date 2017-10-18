@@ -48,10 +48,6 @@ HAL_PIN(udc);
 //#define PULLUP           GPIO_PULLUP  // GPIO_PULLDOWN for linear axis, GPIO_PULLUP for all else
 
 
-<<<<<<< HEAD
-#define MAX_SATURATED    0.1          // max. time in s position PID saturation is allowed
-#define MAX_CURRENT      300           // max. motor current in 1/10 A
-=======
 #define BOARD_ID  0x001
 
 // ID 1
@@ -116,6 +112,23 @@ HAL_PIN(udc);
 #define SCALE            2.0 * M_PI                // scaling factor for joint 4,5
 #define HOMING_VEL       0.1		// For all else
 #define PULLUP           GPIO_PULLUP  // GPIO_PULLDOWN for linear axis, GPIO_PULLUP for all else
+
+
+// ID 6
+#elif BOARD_ID == 0x006
+#define TX_ADDRESS       0x0106     // address that is used for responding
+#define RX_ADDRESS       0x0006       // address to listen to
+#define MAX_SATURATED    0.2          // max. time in s position PID saturation is allowed
+#define MAX_CURRENT      90           // max. motor current in 1/10 A
+//#define POSITION_OFFSET  -0.2          // static position offset ( Where the Index pin is situated
+#define POSITION_OFFSET  0.0          // use Zero Offset, Ros will handle it
+#define SCALE             -(2.0 * M_PI) / 24.3495               // scaling factor for joint
+#define HOMING_VEL       0.1		// For all else
+#define PULLUP           GPIO_PULLUP  // GPIO_PULLDOWN for linear axis, GPIO_PULLUP for all else
+#endif
+
+
+
 
 #define UVLO             15.0
 
@@ -278,8 +291,17 @@ void CAN_rdMsg (uint32_t ctrl, CAN_msg *msg)  {
   CAN->RF0R |= CAN_RF0R_RFOM0;             /* Release FIFO 0 output mailbox */
 
   if (msg->len == 8) {
+
+    // Bit 7 Clears the errors
+    if ((msg->data[0] >> 7)  & 0x01) { //clear errors
+      if (errors != 0) {
+        hal_parse("start");
+        errors = 0;
+      }
+    }
+
     // Enable Flag
-    if ((msg->data[0] >> 4)  & 0x01) { //arm motor
+    if (((msg->data[0] >> 4)  & 0x01) && errors == 0) { //arm motor
       enable = 1;
       ledRed(1);
     }
@@ -329,12 +351,35 @@ void CAN_rdMsg (uint32_t ctrl, CAN_msg *msg)  {
       }
     }
 
-    else { //polling
-      printf("polling...\n");
-    }
 
-    if (((msg->data[0] >> 2)  & 0x01) && homing == 0) { //home joint
+    if (((msg->data[0] >> 2)  & 0x01)) { //home joint
     // Home is requested
+
+      if (homing != 0) {
+        homing = 0;
+        if (mode == 0) {
+          if (BOARD_ID == 0x002 || BOARD_ID == 0x006)
+          {
+    	      hal_parse("ypid0.pos_p = 7");  // p Value for position controller during homing  (was 7 For Linear Axis! 0.4 for all else)
+          }
+          else
+          {
+    	      hal_parse("ypid0.pos_p = 0.4");  // p Value for position controller during homing  (was 7 For Linear Axis! 0.4 for all else)
+          }
+          hal_parse("ypid0.vel_ext_cmd = vel1.vel");
+
+          ledBlue(1);+
+          ledGreen(0);
+        }
+
+        else if (mode == 1) {
+          hal_parse("ypid0.pos_p = 0");
+          hal_parse("ypid0.vel_ext_cmd = linrev0.cmd_d_out");
+
+          ledBlue(0);
+          ledGreen(1);
+        }
+      }
 
       ledGreen(1);
       ledBlue(0);
@@ -348,10 +393,6 @@ void CAN_rdMsg (uint32_t ctrl, CAN_msg *msg)  {
       }
     }
 
-    // Bit 7 Clears the errors
-    if ((msg->data[0] >> 7)  & 0x01) { //clear errors
-        hal_parse("start");
-    }
 
 
     // Bit 5 requests the position to be sent back
@@ -517,10 +558,41 @@ static void nrt_func(float period, volatile void * ctx_ptr, volatile hal_pin_ins
 
   if (PIN(udc) < UVLO && running) {
     //TX
-    hal_parse("stop");
+    //hal_parse("stop");
     errors = errors | 1 << 4;
+    enable = 0;
     sendError();
     printf("UVLO!\n");
+    PIN(enable) = 0.0;
+    if (homing != 0) {
+      homing = 0;
+      if (mode == 0) {
+        if (BOARD_ID == 0x002 || BOARD_ID == 0x006)
+        {
+  	      hal_parse("ypid0.pos_p = 7");  // p Value for position controller during homing  (was 7 For Linear Axis! 0.4 for all else)
+        }
+        else
+        {
+  	      hal_parse("ypid0.pos_p = 0.4");  // p Value for position controller during homing  (was 7 For Linear Axis! 0.4 for all else)
+        }
+        hal_parse("ypid0.vel_ext_cmd = vel1.vel");
+
+        ledBlue(1);
+        ledGreen(0);
+      }
+
+      else if (mode == 1) {
+        hal_parse("ypid0.pos_p = 0");
+        hal_parse("ypid0.vel_ext_cmd = linrev0.cmd_d_out");
+
+        ledBlue(0);
+        ledGreen(1);
+      }
+    }
+  }
+
+  else {
+    PIN(enable) = enable;
   }
 
   // in case homing was started (state 1) we convert the velocity based on the scale
@@ -646,7 +718,6 @@ static void rt_func(float period, volatile void * ctx_ptr, volatile hal_pin_inst
     PIN(vel) = vel;
   }
 
-  PIN(enable) = enable;
 
   // pos_in is the FRAKING POSITION we have read from the linrev module
   pos_in = PIN(pos_in);

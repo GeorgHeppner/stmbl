@@ -353,6 +353,7 @@ int main(void)
     hal_parse("hvdc0.en = can0.enable");
     hal_parse("can0.saturated = ypid0.saturated");
     hal_parse("can0.current = io0.iw");
+    hal_parse("can0.udc = io0.udc");
 
     hal_parse("vel1.pos_in = linrev0.cmd_out");
     hal_parse("linrev0.cmd_in = can0.pos");
