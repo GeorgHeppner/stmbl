@@ -26,12 +26,13 @@ HAL_PIN(home_vel_out);
 HAL_PIN(home);
 
 HAL_PIN(scale);
+HAL_PIN(udc);
 
 
 #define TX_ADDRESS       0x0106       // address that is used for responding
 #define RX_ADDRESS       0x0006       // address to listen to
 
-#define MAX_SATURATED    0.2          // max. time in s position PID saturation is allowed
+#define MAX_SATURATED    0.1          // max. time in s position PID saturation is allowed
 #define MAX_CURRENT      300           // max. motor current in 1/10 A
 
 #define POSITION_OFFSET  0.0          // static position offset
@@ -41,6 +42,7 @@ HAL_PIN(scale);
 //#define SCALE            89.5353                   // scaling factor for joint linear axis
 
 #define HOMING_VEL       0.1
+#define UVLO             15.0
 
 #define PULLUP           GPIO_PULLUP  // PULLDOWN for linear axis, GPIO_PULLUP for all else
 
@@ -414,6 +416,14 @@ static void nrt_func(float period, volatile void * ctx_ptr, volatile hal_pin_ins
     printf("current!\n");
   }
 
+  if (PIN(udc) < UVLO && running) {
+    //TX
+    hal_parse("stop");
+    errors = errors | 1 << 4;
+    sendError();
+    printf("UVLO!\n");
+  }
+
   if (homing == 1) {
     homing = 3;
     hal_parse("ypid0.pos_p = 0");
@@ -488,10 +498,10 @@ static void rt_func(float period, volatile void * ctx_ptr, volatile hal_pin_inst
   PIN(home) = indexPin;
 
   if (homing != 0) {
-      if (indexPin) {
-        PIN(vel) = 0;
-        homing = 2;
-        homingOffset = pos_in;
+    if (indexPin) {
+      PIN(vel) = 0;
+      homing = 2;
+      homingOffset = pos_in;
     }
   }
 

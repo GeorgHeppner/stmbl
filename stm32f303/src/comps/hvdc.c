@@ -38,6 +38,7 @@ static void rt_stop(float period, volatile void * ctx_ptr, volatile hal_pin_inst
   printf("stop");
   PWM_U = 0;
   PWM_W = 0;
+  TIM8->BDTR &= ~TIM_BDTR_MOE; // off
 }
 
 hal_comp_t hvdc_comp_struct = {
