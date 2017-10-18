@@ -42,14 +42,14 @@ static void nrt_init(volatile void * ctx_ptr, volatile hal_pin_inst_t * pin_ptr)
 static void rt_func(float period, volatile void * ctx_ptr, volatile hal_pin_inst_t * pin_ptr){
    struct vel_ctx_t * ctx = (struct vel_ctx_t *)ctx_ptr;
    struct vel_pin_ctx_t * pins = (struct vel_pin_ctx_t *)pin_ptr;
-   
+
    if(PIN(en) == 0.0){
       ctx->vel_sum = PIN(pos_in);
       ctx->acc_sum = 0.0;
    }
    float vel_ff = PIN(vel_ff) * PIN(h);
    ctx->vel_sum += (ctx->acc_sum + vel_ff) * period; // ff
-   
+
    float pos_error = minus(PIN(pos_in), ctx->vel_sum);
    float w = PIN(w);
    float d = PIN(d);
@@ -66,11 +66,15 @@ static void rt_func(float period, volatile void * ctx_ptr, volatile hal_pin_inst
 
    ctx->acc_sum += acc_ff * period;
 
+   if (ABS(ctx->acc_sum + vel_ff) < 0.0001) {
+     ctx->acc_sum = 0.0;
+   }
+
    PIN(vel) = ctx->acc_sum + vel_ff;
    PIN(acc) = acc_ff;
 
    vel_ff = 2.0 * d * w * pos_error;
-   
+
    ctx->vel_sum += vel_ff * period;
    ctx->vel_sum = mod(ctx->vel_sum);
 

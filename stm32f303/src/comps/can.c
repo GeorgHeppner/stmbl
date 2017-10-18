@@ -246,7 +246,7 @@ void CAN_rdMsg (uint32_t ctrl, CAN_msg *msg)  {
       printf("polling...\n");
     }
 
-    if (()(msg->data[0] >> 2)  & 0x01) && homing == 0) { //home joint
+    if (((msg->data[0] >> 2)  & 0x01) && homing == 0) { //home joint
       ledGreen(1);
       ledBlue(0);
       ledRed(0);
