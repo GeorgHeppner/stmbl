@@ -138,7 +138,7 @@ uint8_t errors = 0b00000000; // 0: motor disconnected / 1: motor short / 2: posi
 uint8_t current = 0;         // motor current in 1/10 A (100mA / LSB)
 
 uint8_t running = 0;
-uint8_t mode = 0; //0 = pos, 1 = vel
+uint8_t mode = 0; //0 = pos, 1 = vel , 2 = homing positive , 3 = homin negative
 uint8_t indexPin = 0;
 
 uint32_t timeout = 0;
@@ -276,6 +276,7 @@ void setEnable(int32_t enable_)
 }
 
 // Sets the desired P Value for the controller based on the currend mode
+// DEPRECATED, USE THE setMode NOW
 void setPValue()
 {
   // mode has to be set before
@@ -298,6 +299,86 @@ void setPValue()
     hal_parse("ypid0.pose_p = 0");
   }
 
+}
+
+void setMode(uint32_t desired_mode)
+{
+  // Sets the mode to either
+  // 0 = Position
+  // 1 = Velocity
+  // 2 = Positive Homing in Velcity mode
+  // 3 = Inverse Homing in Velocity mode
+  mode = desired_mode;
+
+  switch (desired_mode)
+  {
+    // Position
+    case 0:
+       mode = 0;
+      if (BOARD_ID == 0x002 || BOARD_ID == 0x006)
+      {
+        hal_parse("ypid0.pos_p = 7"); //7 for 6 and 2 0.4 for all else
+      }
+      else
+      {
+         hal_parse("ypid0.pose_p = 0.4");
+      }
+      hal_parse("ypid0.vel_ext_cmd = vel1.vel"); // Set the comand to the the output of the velocity cascade i think?
+
+      // Activate Blue LED -> Resulting in Violet when active and Blue when inactive
+      ledBlue(1);
+      ledGreen(0);
+      break;
+    // Velocity
+    case 1:
+      mode = 1;
+      hal_parse("ypid0.pose_p = 0");
+      hal_parse("ypid0.vel_ext_cmd = linrev0.cmd_d_out"); // Set the Velcotiy to the scaled input
+
+      // Activate green LED -> Resulting in Yellow when active and Green when inactive
+      ledBlue(0);
+      ledGreen(1);
+      break;
+    // Positive homing (velocity)
+    case 2:
+      mode = 1;
+      hal_parse("ypid0.pose_p = 0");
+      hal_parse("ypid0.vel_ext_cmd = linrev0.home_d_out");
+      // Activate green LED -> Resulting in Yellow when active and Green when inactive
+      ledBlue(0);
+      ledGreen(0);
+      ledRed(0);
+      break;
+    // Negative homing (veocity)
+    case 3:
+      mode = 1;
+      hal_parse("ypid0.pose_p = 0");
+      hal_parse("ypid0.vel_ext_cmd = linrev0.home_neg_d_out");
+      // Activate green LED -> Resulting in Yellow when active and Green when inactive
+      ledBlue(0);
+      ledGreen(0);
+      ledRed(0);
+      break;
+    // Velocity
+    default:
+      mode = 1;
+      hal_parse("ypid0.pose_p = 0");
+      hal_parse("ypid0.vel_ext_cmd = linrev0.cmd_d_out"); // Set the Velcotiy to the scaled input
+      // Activate green LED -> Resulting in Yellow when active and Green when inactive
+      ledBlue(0);
+      ledGreen(1);
+      break;
+  }
+}
+
+// Resets the control values to initial defaults
+void resetControlValues()
+{
+//  homing = 0;
+//  vel = 0;
+  ledBlue(1);
+  ledGreen(1);
+  ledRed(1);
 }
 
 
@@ -334,8 +415,10 @@ void CAN_rdMsg (uint32_t ctrl, CAN_msg *msg)  {
   if (msg->len == 8) {
 
     // Bit 7 Clears the errors
-    if ((msg->data[0] >> 7)  & 0x01) { //clear errors
+    if ((msg->data[0] >> 7)  & 0x01) {
+      //clear errors if they were present
       if (errors != 0) {
+        resetControlValues();
         hal_parse("start");
         errors = 0;
       }
@@ -357,13 +440,14 @@ void CAN_rdMsg (uint32_t ctrl, CAN_msg *msg)  {
 
       // In Case of velocity mode, activate the position mode and set a P value for that... (TODO: Use the Default P Value instead)
       if (mode == 1) {
-        mode = 0;     // Sets mode to Position
-        setPValue();  // Sets P accordingy
-        hal_parse("ypid0.vel_ext_cmd = vel1.vel"); // Set the comand to the veclotiy
+        setMode(0);
+//        mode = 0;     // Sets mode to Position
+//        setPValue();  // Sets P accordingy
+//          hal_parse("ypid0.vel_ext_cmd = vel1.vel"); // Set the comand to ... whatever
 
-        // Togheter with RED (Armed) this will result in Violet
-        ledBlue(1);
-        ledGreen(0);
+//        // Togheter with RED (Armed) this will result in Violet
+//        ledBlue(1);
+//        ledGreen(0);
       }
     }
     // Velocity is set
@@ -373,13 +457,14 @@ void CAN_rdMsg (uint32_t ctrl, CAN_msg *msg)  {
 
       // In Case the previous mode was Position mode, change to velocity by deactivating the position controller
       if (mode == 0) {
-        mode = 1;
-        setPValue();
-        hal_parse("ypid0.vel_ext_cmd = linrev0.cmd_d_out");
+        setMode(1);
+//        mode = 1;
+//        setPValue();
+//          hal_parse("ypid0.vel_ext_cmd = linrev0.cmd_d_out");
 
-        // Together with RED (Armed) this will result in yellow
-        ledBlue(0);
-        ledGreen(1);
+//        // Together with RED (Armed) this will result in yellow
+//        ledBlue(0);
+//        ledGreen(1);
       }
     }
 
@@ -388,42 +473,50 @@ void CAN_rdMsg (uint32_t ctrl, CAN_msg *msg)  {
     // Home is requested
 
       // If Homing is curently Active (antything but 0)
-//      if (homing != 0) {
-//        homing = 0;
-//        if (mode == 0) {
+      if (homing != 0) {
+        homing = 0;
+        if (mode == 0) {
+          setMode(0);
 //          setPValue();
 //          hal_parse("ypid0.vel_ext_cmd = vel1.vel");
 
 //          ledBlue(1);
 //          ledGreen(0);
-//        }
+        }
 
-//        else if (mode == 1) {
+        else if (mode == 1) {
+          setMode(1);
 //          setPValue();
 //          hal_parse("ypid0.vel_ext_cmd = linrev0.cmd_d_out");
 
 //          ledBlue(0);
 //          ledGreen(1);
-//        }
-//      }
+        }
+      }
 
       // Set the mode to velocity
-      mode = 1;
+     // mode = 1;
       // Change p values accordingly:
-      setPValue();
+     // setPValue();
 
       // Activate the Green LED (leave the enabled flag (red) as is)
-      ledGreen(1);
-      ledBlue(0);
+     //ledGreen(1);
+      //ledBlue(0);
       //ledRed(0);
+
+      // Activate velotiy mode
+      //setMode(1);
 
       // Direction is set to a direction 1 = positive idrection -1 = negatice direction
       if ((msg->data[0] >> 3)  & 0x01) { //set direction
         homing = 1;
+        //setMode(2);
       }
       else {
         homing = -1;
+        //setMode(3);
       }
+      //homing = 1;
     }
 
 
@@ -571,6 +664,14 @@ static void nrt_func(float period, volatile void * ctx_ptr, volatile hal_pin_ins
     CAN->RF0R |= CAN_RF0R_RFOM0;            /* release FIFO */
   }
 
+  // In Case of an Error:
+  // The Error Flag is Set
+  // The Controller is stopped (hal_parse("stop"))
+  // The error is reported
+  // Uppon Clearing the error, the controller is enabled aggain
+  // Todo: Should we clear the enable Flag?
+
+
  //Check for Saturation of controller
   if (PIN(saturated) > MAX_SATURATED && running) {
     //TX
@@ -588,6 +689,8 @@ static void nrt_func(float period, volatile void * ctx_ptr, volatile hal_pin_ins
     sendError();
     printf("current!\n");
   }
+
+  // Detecting an undervoltage is a special case as the controller needs to keep running.. (why?)
 
   if (PIN(udc) < UVLO && running)
   {
@@ -607,18 +710,21 @@ static void nrt_func(float period, volatile void * ctx_ptr, volatile hal_pin_ins
 
   if (homing == 1) {
     homing = 3;
-    //hal_parse("ypid0.pos_p = 0"); P Was already set
+    hal_parse("ypid0.pos_p = 0"); //P Was already set
     hal_parse("ypid0.vel_ext_cmd = linrev0.home_d_out");
+//    setMode(2);
   }
   // Also velcity conversion
   else if (homing == -1) {
     homing = 3;
-    //hal_parse("ypid0.pos_p = 0"); P Was already set
+    hal_parse("ypid0.pos_p = 0"); //P Was already set
     hal_parse("ypid0.vel_ext_cmd = linrev0.home_neg_d_out");
+//    setMode(3);
   }
 
+
   // homing state 2 -> Homing is finished -> Drive to theposition in question
-  else if (homing == 2) {
+  if (homing == 2) {
 
 // homingOffset = the position we read when the index pin is reached
 // pos -> the position we want to move to during reset
@@ -635,21 +741,27 @@ static void nrt_func(float period, volatile void * ctx_ptr, volatile hal_pin_ins
     PIN(pos) = homingOffset;
 
     // Homing finished, in case that we wre are in Position mode:
-    if (mode == 0) {
-      setPValue();
-      hal_parse("ypid0.vel_ext_cmd = vel1.vel");
+//    if (mode == 0) {
+////      setMode(0); // Should not happen
+//        setPValue();
+//        hal_parse("ypid0.vel_ext_cmd = vel1.vel");
 
-      ledBlue(1);
-      ledGreen(0);
-    }
-    // Of if in velocity mode:
-    else if (mode == 1) {
-      setPValue();
-      hal_parse("ypid0.vel_ext_cmd = linrev0.cmd_d_out");
+//       ledBlue(1);
+//       ledGreen(0);
+//    }
+//    // Of if in velocity mode:
+//    else if (mode == 1) {
+////      setMode(1); // We EXPLICITLY set the mode aggain to convert all scalings back to their regular mode (the requested mode was actually a different one)
+//        setPValue();
+//       hal_parse("ypid0.vel_ext_cmd = linrev0.cmd_d_out");
 
-      ledBlue(0);
-      ledGreen(1);
-    }
+//       ledBlue(0);
+//       ledGreen(1);
+//    }
+
+    // Set Position mode Deliberately
+    uint32_t temp_mode = mode;
+    setMode(0);
 
     // if POS (note that pos is the current value given as position input. So during homing, this actually means it is a homingOffset to move to after the homing)
     if (pos != 0 && mode == 0) {
@@ -674,6 +786,10 @@ static void nrt_func(float period, volatile void * ctx_ptr, volatile hal_pin_ins
         }
       }
     }
+
+    // reset mode to the one it was bevore
+    setMode(mode);
+
     homing = 0;
     doneHoming();
     printf("done homing!\n");
