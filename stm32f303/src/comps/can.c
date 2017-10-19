@@ -48,7 +48,7 @@ HAL_PIN(udc);
 //#define PULLUP           GPIO_PULLUP  // GPIO_PULLDOWN for linear axis, GPIO_PULLUP for all else
 
 
-#define BOARD_ID  0x001
+#define BOARD_ID  0x003
 
 // ID 1
 #if BOARD_ID == 0x001
@@ -260,6 +260,47 @@ static void MX_CAN_Init(void)
   hcan.pRxMsg= &myRxMessage;
 }
 
+/*! CDhanges the enable state and sets the LED accordindly*/
+void setEnable(int32_t enable_)
+{
+  if (enable_) // Make Sure that we only writes 1 or 0
+  {
+    enable = 1;
+    ledRed(1);
+  }
+  else
+  {
+    enable = 0;
+    ledRed(0);
+  }
+}
+
+// Sets the desired P Value for the controller based on the currend mode
+void setPValue()
+{
+  // mode has to be set before
+  // mode 0 = Position
+  // mode 1 = Velocity
+
+  if(mode == 0)
+  {
+    if (BOARD_ID == 0x002 || BOARD_ID == 0x006)
+    {
+            hal_parse("ypid0.pos_p = 7"); // Was 7 for 6 and 2 0.4 for all else
+    }
+    else
+    {
+        hal_parse("ypid0.pose_p = 0.4"); // TODO: Figure out what hal parese cann actually work with and make this better
+    }
+  }
+  else
+  {
+    hal_parse("ypid0.pose_p = 0");
+  }
+
+}
+
+
 void CAN_rdMsg (uint32_t ctrl, CAN_msg *msg)  {
                                               /* Read identifier information  */
   if ((CAN->sFIFOMailBox[0].RIR & CAN_ID_EXT) == 0) {
@@ -302,12 +343,10 @@ void CAN_rdMsg (uint32_t ctrl, CAN_msg *msg)  {
 
     // Enable Flag
     if (((msg->data[0] >> 4)  & 0x01) && errors == 0) { //arm motor
-      enable = 1;
-      ledRed(1);
+      setEnable(1);
     }
     else {
-      enable = 0;
-      ledRed(0);
+      setEnable(0);
     }
 
      // Set Position Flag
@@ -318,19 +357,11 @@ void CAN_rdMsg (uint32_t ctrl, CAN_msg *msg)  {
 
       // In Case of velocity mode, activate the position mode and set a P value for that... (TODO: Use the Default P Value instead)
       if (mode == 1) {
-        mode = 0;
-	if (BOARD_ID == 0x002 || BOARD_ID == 0x006)
-	{
-	        hal_parse("ypid0.pos_p = 7"); // Was 7 for 6 and 2 0.4 for all else
-	}
-	else
-	{
-		hal_parse("ypid0.pose_p = 0.4"); // TODO: Figure out what hal parese cann actually work with and make this better
-	}
+        mode = 0;     // Sets mode to Position
+        setPValue();  // Sets P accordingy
+        hal_parse("ypid0.vel_ext_cmd = vel1.vel"); // Set the comand to the veclotiy
 
-
-        hal_parse("ypid0.vel_ext_cmd = vel1.vel");
-
+        // Togheter with RED (Armed) this will result in Violet
         ledBlue(1);
         ledGreen(0);
       }
@@ -343,9 +374,10 @@ void CAN_rdMsg (uint32_t ctrl, CAN_msg *msg)  {
       // In Case the previous mode was Position mode, change to velocity by deactivating the position controller
       if (mode == 0) {
         mode = 1;
-        hal_parse("ypid0.pos_p = 0");
+        setPValue();
         hal_parse("ypid0.vel_ext_cmd = linrev0.cmd_d_out");
 
+        // Together with RED (Armed) this will result in yellow
         ledBlue(0);
         ledGreen(1);
       }
@@ -355,35 +387,36 @@ void CAN_rdMsg (uint32_t ctrl, CAN_msg *msg)  {
     if (((msg->data[0] >> 2)  & 0x01)) { //home joint
     // Home is requested
 
-      if (homing != 0) {
-        homing = 0;
-        if (mode == 0) {
-          if (BOARD_ID == 0x002 || BOARD_ID == 0x006)
-          {
-    	      hal_parse("ypid0.pos_p = 7");  // p Value for position controller during homing  (was 7 For Linear Axis! 0.4 for all else)
-          }
-          else
-          {
-    	      hal_parse("ypid0.pos_p = 0.4");  // p Value for position controller during homing  (was 7 For Linear Axis! 0.4 for all else)
-          }
-          hal_parse("ypid0.vel_ext_cmd = vel1.vel");
+      // If Homing is curently Active (antything but 0)
+//      if (homing != 0) {
+//        homing = 0;
+//        if (mode == 0) {
+//          setPValue();
+//          hal_parse("ypid0.vel_ext_cmd = vel1.vel");
 
-          ledBlue(1);+
-          ledGreen(0);
-        }
+//          ledBlue(1);
+//          ledGreen(0);
+//        }
 
-        else if (mode == 1) {
-          hal_parse("ypid0.pos_p = 0");
-          hal_parse("ypid0.vel_ext_cmd = linrev0.cmd_d_out");
+//        else if (mode == 1) {
+//          setPValue();
+//          hal_parse("ypid0.vel_ext_cmd = linrev0.cmd_d_out");
 
-          ledBlue(0);
-          ledGreen(1);
-        }
-      }
+//          ledBlue(0);
+//          ledGreen(1);
+//        }
+//      }
 
+      // Set the mode to velocity
+      mode = 1;
+      // Change p values accordingly:
+      setPValue();
+
+      // Activate the Green LED (leave the enabled flag (red) as is)
       ledGreen(1);
       ledBlue(0);
-      ledRed(0);
+      //ledRed(0);
+
       // Direction is set to a direction 1 = positive idrection -1 = negatice direction
       if ((msg->data[0] >> 3)  & 0x01) { //set direction
         homing = 1;
@@ -556,56 +589,31 @@ static void nrt_func(float period, volatile void * ctx_ptr, volatile hal_pin_ins
     printf("current!\n");
   }
 
-  if (PIN(udc) < UVLO && running) {
+  if (PIN(udc) < UVLO && running)
+  {
     //TX
     //hal_parse("stop");
     errors = errors | 1 << 4;
-    enable = 0;
+    setEnable(0);
     sendError();
     printf("UVLO!\n");
-    PIN(enable) = 0.0;
-    if (homing != 0) {
-      homing = 0;
-      if (mode == 0) {
-        if (BOARD_ID == 0x002 || BOARD_ID == 0x006)
-        {
-  	      hal_parse("ypid0.pos_p = 7");  // p Value for position controller during homing  (was 7 For Linear Axis! 0.4 for all else)
-        }
-        else
-        {
-  	      hal_parse("ypid0.pos_p = 0.4");  // p Value for position controller during homing  (was 7 For Linear Axis! 0.4 for all else)
-        }
-        hal_parse("ypid0.vel_ext_cmd = vel1.vel");
-
-        ledBlue(1);
-        ledGreen(0);
-      }
-
-      else if (mode == 1) {
-        hal_parse("ypid0.pos_p = 0");
-        hal_parse("ypid0.vel_ext_cmd = linrev0.cmd_d_out");
-
-        ledBlue(0);
-        ledGreen(1);
-      }
-    }
   }
 
-  else {
-    PIN(enable) = enable;
-  }
+
+  // Actually write things based on the enable status
+  PIN(enable) = enable;
 
   // in case homing was started (state 1) we convert the velocity based on the scale
 
   if (homing == 1) {
     homing = 3;
-    hal_parse("ypid0.pos_p = 0");
+    //hal_parse("ypid0.pos_p = 0"); P Was already set
     hal_parse("ypid0.vel_ext_cmd = linrev0.home_d_out");
   }
   // Also velcity conversion
   else if (homing == -1) {
     homing = 3;
-    hal_parse("ypid0.pos_p = 0");
+    //hal_parse("ypid0.pos_p = 0"); P Was already set
     hal_parse("ypid0.vel_ext_cmd = linrev0.home_neg_d_out");
   }
 
@@ -626,24 +634,17 @@ static void nrt_func(float period, volatile void * ctx_ptr, volatile hal_pin_ins
     // Set the Output Position of this Module to the ucrrent homing offset (aka the current value that the encoders have)
     PIN(pos) = homingOffset;
 
-
+    // Homing finished, in case that we wre are in Position mode:
     if (mode == 0) {
-      if (BOARD_ID == 0x002 || BOARD_ID == 0x006)
-      {
-	      hal_parse("ypid0.pos_p = 7");  // p Value for position controller during homing  (was 7 For Linear Axis! 0.4 for all else)
-      }
-      else
-      {
-	      hal_parse("ypid0.pos_p = 0.4");  // p Value for position controller during homing  (was 7 For Linear Axis! 0.4 for all else)
-      }
+      setPValue();
       hal_parse("ypid0.vel_ext_cmd = vel1.vel");
 
       ledBlue(1);
       ledGreen(0);
     }
-
+    // Of if in velocity mode:
     else if (mode == 1) {
-      hal_parse("ypid0.pos_p = 0");
+      setPValue();
       hal_parse("ypid0.vel_ext_cmd = linrev0.cmd_d_out");
 
       ledBlue(0);
