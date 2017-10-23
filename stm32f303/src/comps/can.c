@@ -340,6 +340,7 @@ void setMode(uint32_t desired_mode)
       ledGreen(1);
       break;
     // Positive homing (velocity)
+    // Currently unused
     case 2:
       mode = 1;
       hal_parse("ypid0.pose_p = 0");
@@ -350,6 +351,7 @@ void setMode(uint32_t desired_mode)
       ledRed(0);
       break;
     // Negative homing (veocity)
+    // currently unused
     case 3:
       mode = 1;
       hal_parse("ypid0.pose_p = 0");
@@ -374,11 +376,12 @@ void setMode(uint32_t desired_mode)
 // Resets the control values to initial defaults
 void resetControlValues()
 {
-//  homing = 0;
-//  vel = 0;
-  ledBlue(1);
-  ledGreen(1);
-  ledRed(1);
+  homing = 0;
+  vel = 0;
+  // Set Velocity as default
+  setMode(0);
+  // Disable by default (in case an enable is sent inthe samemessage it willbe evaluated after the error clear and shouldbe applied immediately
+  setEnable(0);
 }
 
 
@@ -664,12 +667,13 @@ static void nrt_func(float period, volatile void * ctx_ptr, volatile hal_pin_ins
     CAN->RF0R |= CAN_RF0R_RFOM0;            /* release FIFO */
   }
 
-  // In Case of an Error:
-  // The Error Flag is Set
-  // The Controller is stopped (hal_parse("stop"))
-  // The error is reported
-  // Uppon Clearing the error, the controller is enabled aggain
-  // Todo: Should we clear the enable Flag?
+  /* In Case of an Error:
+     The Error Flag is Set
+     The Controller is stopped (hal_parse("stop"))
+     The error is reported
+     Uppon Clearing the error, the controller is enabled aggain
+     Todo: Should we clear the enable Flag?
+  */
 
 
  //Check for Saturation of controller
@@ -701,6 +705,18 @@ static void nrt_func(float period, volatile void * ctx_ptr, volatile hal_pin_ins
     sendError();
     printf("UVLO!\n");
   }
+  else
+  {
+    // In Case that the Voltage is fine (no emergency stop)
+    // See if there are errors now ( which migt be the case from pressing the stop)
+    if (errors)
+    {
+      hal_parse("stop");
+      sendError();
+      printf("UVLORESETTED!\n");
+    }
+
+  }
 
 
   // Actually write things based on the enable status
@@ -709,6 +725,7 @@ static void nrt_func(float period, volatile void * ctx_ptr, volatile hal_pin_ins
   // in case homing was started (state 1) we convert the velocity based on the scale
 
   if (homing == 1) {
+    // TODO: FOR SOME REASON THIS IS NOT WORKING WITH MODESET... WHY?
     homing = 3;
     hal_parse("ypid0.pos_p = 0"); //P Was already set
     hal_parse("ypid0.vel_ext_cmd = linrev0.home_d_out");
@@ -716,6 +733,7 @@ static void nrt_func(float period, volatile void * ctx_ptr, volatile hal_pin_ins
   }
   // Also velcity conversion
   else if (homing == -1) {
+    // TODO: FOR SOME REASON THIS IS NOT WORKING WITH MODESET... WHY?
     homing = 3;
     hal_parse("ypid0.pos_p = 0"); //P Was already set
     hal_parse("ypid0.vel_ext_cmd = linrev0.home_neg_d_out");
@@ -813,6 +831,9 @@ static void rt_func(float period, volatile void * ctx_ptr, volatile hal_pin_inst
   struct can_pin_ctx_t * pins = (struct can_pin_ctx_t *)pin_ptr;
   indexPin = HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_10);
   PIN(home) = indexPin;
+
+  // Set the Velocity to the currenty desired velocity, this should always be done as we would otherwise be incapable of restting the velocityy during homing
+  PIN(vel) = vel;
 
   // Check if any kind of homing is active
   if (homing != 0) {
