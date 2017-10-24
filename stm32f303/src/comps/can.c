@@ -353,7 +353,7 @@ void resetControlValues()
   vel = 0;
 
   // Set the Position to the current pos
-  pos = pos_in;
+  // pos = pos_in;
   // Make Velocity the default (safer)
   setMode(1);
 
@@ -413,7 +413,7 @@ void CAN_rdMsg (uint32_t ctrl, CAN_msg *msg)  {
 
         errors = 0;
         reported_errors = 0;
-        testTransmit(9);
+        //testTransmit(9);
       }
     }
 
