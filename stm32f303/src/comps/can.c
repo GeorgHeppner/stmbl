@@ -277,10 +277,8 @@ inline void setMode(uint32_t desired_mode)
   {
     // Position
     case 0:
-      mode = 0;
-//     setPValue();  // Sets P accordingy
-//     hal_parse("ypid0.vel_ext_cmd = vel1.vel"); // Set the comand to ... whatever
 
+      mode = 0;
       if (BOARD_ID == 0x002 || BOARD_ID == 0x006)
       {
         hal_parse("ypid0.pos_p = 7"); //7 for 6 and 2 0.4 for all else
@@ -291,13 +289,17 @@ inline void setMode(uint32_t desired_mode)
       }
       hal_parse("ypid0.vel_ext_cmd = vel1.vel"); // Set the comand to the the output of the velocity cascade i think?
 
+      // Deactivate Velocities in Position mode
+      vel = 0;
+
       // Activate Blue LED -> Resulting in Violet when active and Blue when inactive
       ledBlue(1);
       ledGreen(0);
-      testTransmit(00);
+//      testTransmit(00);
       break;
     // Velocity
     case 1:
+
       mode = 1;
       hal_parse("ypid0.pos_p = 0");
       hal_parse("ypid0.vel_ext_cmd = linrev0.cmd_d_out"); // Set the Velcotiy to the scaled input
@@ -305,7 +307,7 @@ inline void setMode(uint32_t desired_mode)
       // Activate green LED -> Resulting in Yellow when active and Green when inactive
       ledBlue(0);
       ledGreen(1);
-      testTransmit(01);
+//      testTransmit(01);
       break;
     // Positive homing (velocity)
     // Currently unused
@@ -316,7 +318,7 @@ inline void setMode(uint32_t desired_mode)
 
       ledBlue(1);
       ledGreen(1);
-      testTransmit(02);
+//      testTransmit(02);
       break;
     // Negative homing (veocity)
     // currently unused
@@ -328,7 +330,7 @@ inline void setMode(uint32_t desired_mode)
        ledBlue(1);
       ledGreen(1);
 
-      testTransmit(03);
+//      testTransmit(03);
       break;
     // Velocity
     default:
@@ -338,7 +340,7 @@ inline void setMode(uint32_t desired_mode)
       // Activate green LED -> Resulting in Yellow when active and Green when inactive
       ledBlue(0);
       ledGreen(0);
-      testTransmit(04);
+//      testTransmit(04);
       break;
   }
 }
@@ -352,13 +354,10 @@ void resetControlValues()
   // Set the Velocity to 0
   vel = 0;
 
-  // Set the p Values for the mode which we are currently in
-  // If the current mode was one that is doing a reset -> Set to standrd velocity mode
-  if (mode > 2)
-  {
-    mode = 0;
-  }
-  setMode(mode);
+  // Set the Position to the current pos
+  pos = pos_in;
+  // Make Velocity the default (safer)
+  setMode(1);
 
   // Disable by default (in case an enable is sent inthe samemessage it willbe evaluated after the error clear and shouldbe applied immediately
   setEnable(0);
@@ -411,8 +410,9 @@ void CAN_rdMsg (uint32_t ctrl, CAN_msg *msg)  {
       //clear errors if they were present
       if (errors != 0)
       {
-        //resetControlValues();
+        resetControlValues();
         hal_parse("start");
+
         errors = 0;
         reported_errors = 0;
         testTransmit(9);
@@ -431,17 +431,21 @@ void CAN_rdMsg (uint32_t ctrl, CAN_msg *msg)  {
 
      // Set Position Flag
     if ((msg->data[0])  & 0x01) { //set position
-      uint8_t b[] = {msg->data[4], msg->data[3], msg->data[2], msg->data[1]};
-      // The actual position is Copied to the pos variable for later use
-      memcpy(&pos, &b, sizeof(pos));
-      vel = 0;
-      setMode(0);
+      // Only accept new position commands when homing is NOT active
+//      if (homing == 0)
+//      {
+        uint8_t b[] = {msg->data[4], msg->data[3], msg->data[2], msg->data[1]};
+        // The actual position is Copied to the pos variable for later use
+        memcpy(&pos, &b, sizeof(pos));
+        setMode(0);
+//      }
     }
     // Velocity is set
     else if ((msg->data[0] >> 1)  & 0x01) { //set velocity
       uint8_t b[] = {msg->data[4], msg->data[3], msg->data[2], msg->data[1]};
       memcpy(&vel, &b, sizeof(vel));
-
+      // A Velocity command always superseeds the homing
+//      homing = 0;
       setMode(1);
     }
 
@@ -526,8 +530,8 @@ void testTransmit(unsigned char * foo) {
 COMMAND("cantx", testTransmit);
 
 void sendError() {
-//  if (errors != reported_errors)  // Only actively send out the errors if the reported errors are differnt (i.e. we did not send the error before)
-//  {
+  if (errors != reported_errors)  // Only actively send out the errors if the reported errors are differnt (i.e. we did not send the error before)
+  {
 
     hcan.pTxMsg = &myTxMessage;
 
@@ -546,12 +550,7 @@ void sendError() {
     HAL_CAN_Transmit(&hcan, HAL_MAX_DELAY);
 
     reported_errors = errors;
-//  }
-
-    // RED!
-    ledBlue(0);
-    ledGreen(0);
-    ledRed(1);
+   }
 }
 
 // Finished homing, report back to sender
