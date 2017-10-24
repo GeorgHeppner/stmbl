@@ -432,20 +432,20 @@ void CAN_rdMsg (uint32_t ctrl, CAN_msg *msg)  {
      // Set Position Flag
     if ((msg->data[0])  & 0x01) { //set position
       // Only accept new position commands when homing is NOT active
-//      if (homing == 0)
-//      {
+      if (homing == 0)
+      {
         uint8_t b[] = {msg->data[4], msg->data[3], msg->data[2], msg->data[1]};
         // The actual position is Copied to the pos variable for later use
         memcpy(&pos, &b, sizeof(pos));
         setMode(0);
-//      }
+      }
     }
     // Velocity is set
     else if ((msg->data[0] >> 1)  & 0x01) { //set velocity
       uint8_t b[] = {msg->data[4], msg->data[3], msg->data[2], msg->data[1]};
       memcpy(&vel, &b, sizeof(vel));
       // A Velocity command always superseeds the homing
-//      homing = 0;
+      homing = 0;
       setMode(1);
     }
 
@@ -621,6 +621,26 @@ static void nrt_func(float period, volatile void * ctx_ptr, volatile hal_pin_ins
      Todo: Should we clear the enable Flag?
   */
 
+  if (PIN(udc) < UVLO && running)
+  {
+    //TX
+    //hal_parse("stop");
+    errors = errors | 1 << 4;
+    setEnable(0);
+    sendError();
+    printf("UVLO!\n");
+  }
+  else
+  {
+    // In Case that the Voltage is fine (no emergency stop)
+    // See if there are errors now ( which migt be the case from pressing the stop)
+    if (errors)
+    {
+      hal_parse("stop");
+      sendError();
+      printf("UVLORESETTED!\n");
+    }
+  }
 
  //Check for Saturation of controller
   if (PIN(saturated) > MAX_SATURATED && running) {
@@ -642,27 +662,6 @@ static void nrt_func(float period, volatile void * ctx_ptr, volatile hal_pin_ins
 
    //Detecting an undervoltage is a special case as the controller needs to keep running.. (why?)
 
-  if (PIN(udc) < UVLO && running)
-  {
-    //TX
-    //hal_parse("stop");
-    errors = errors | 1 << 4;
-    setEnable(0);
-    sendError();
-    printf("UVLO!\n");
-  }
-  else
-  {
-    // In Case that the Voltage is fine (no emergency stop)
-    // See if there are errors now ( which migt be the case from pressing the stop)
-    if (errors)
-    {
-      hal_parse("stop");
-      sendError();
-      printf("UVLORESETTED!\n");
-    }
-
-  }
 
 
   // Actually write things based on the enable status
