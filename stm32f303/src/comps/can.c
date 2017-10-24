@@ -66,9 +66,7 @@ HAL_PIN(udc);
 //#define POSITION_OFFSET  0.0204          // static position offset
 #define POSITION_OFFSET  0.0          // use Zero Offset, Ros will handle it
 #define SCALE            -2.0 * M_PI    // scaling factor for joint 1,3
-// TODO PUT THIS BACK AFTER TESTING
-#define HOMING_VEL       0.3		// For all else
-//#define HOMING_VEL       0.1		// For all else
+#define HOMING_VEL       0.1		// For all else
 #define PULLUP           GPIO_PULLUP  // GPIO_PULLDOWN for linear axis, GPIO_PULLUP for all else
 
 // ID 4
